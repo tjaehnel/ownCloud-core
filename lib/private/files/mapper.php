@@ -94,8 +94,14 @@ class Mapper {
 	 * @param string $path2
 	 * @throws \Exception
 	 */
-	public function copy($path1, $path2)
-	{
+	public function copy($path1, $path2) {
+		$updateQuery = \OC_DB::prepare('UPDATE `*PREFIX*file_map`'
+			.' SET `logic_path` = ?'
+			.' , `logic_path_hash` = ?'
+			.' , `physic_path` = ?'
+			.' , `physic_path_hash` = ?'
+			.' WHERE `logic_path` = ?');
+
 		$path1 = $this->resolveRelativePath($path1);
 		$path2 = $this->resolveRelativePath($path2);
 		$physicPath1 = $this->logicToPhysical($path1, true);
@@ -105,17 +111,11 @@ class Mapper {
 			'SELECT * FROM `*PREFIX*file_map` WHERE `logic_path` LIKE ?',
 			[$this->helper->escapePathLike($path1 . '%')]
 		);
-		$updateQuery = \OC_DB::prepare('UPDATE `*PREFIX*file_map`'
-			.' SET `logic_path` = ?'
-			.' , `logic_path_hash` = ?'
-			.' , `physic_path` = ?'
-			.' , `physic_path_hash` = ?'
-			.' WHERE `logic_path` = ?');
-		while( $row = $result->fetchRow()) {
+		while ($row = $result->fetchRow()) {
 			$currentLogic = $row['logic_path'];
 			$currentPhysic = $row['physic_path'];
-			$newLogic = $path2.$this->stripRootFolder($currentLogic, $path1);
-			$newPhysic = $physicPath2.$this->stripRootFolder($currentPhysic, $physicPath1);
+			$newLogic = $path2 . $this->stripRootFolder($currentLogic, $path1);
+			$newPhysic = $physicPath2 . $this->stripRootFolder($currentPhysic, $physicPath1);
 			if ($path1 !== $currentLogic) {
 				try {
 					\OC_DB::executeAudited($updateQuery, [
