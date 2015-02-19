@@ -109,24 +109,23 @@ class Mapper {
 
 		$result = \OC_DB::executeAudited(
 			'SELECT * FROM `*PREFIX*file_map` WHERE `logic_path` LIKE ?',
-			[$this->helper->escapePathLike($path1 . '%')]
+			[$this->helper->escapePathLike($path1 . '/%')]
 		);
 		while ($row = $result->fetchRow()) {
 			$currentLogic = $row['logic_path'];
 			$currentPhysic = $row['physic_path'];
 			$newLogic = $path2 . $this->stripRootFolder($currentLogic, $path1);
 			$newPhysic = $physicPath2 . $this->stripRootFolder($currentPhysic, $physicPath1);
-			if ($path1 !== $currentLogic) {
-				try {
-					\OC_DB::executeAudited($updateQuery, [
-						$newLogic, md5($newLogic),
-						$newPhysic, md5($newPhysic),
-						$this->helper->escapePathEquals($currentLogic)
-					]);
-				} catch (\Exception $e) {
-					error_log('Mapper::Copy failed '.$currentLogic.' -> '.$newLogic.'\n'.$e);
-					throw $e;
-				}
+
+			try {
+				\OC_DB::executeAudited($updateQuery, [
+					$newLogic, md5($newLogic),
+					$newPhysic, md5($newPhysic),
+					$this->helper->escapePathEquals($currentLogic)
+				]);
+			} catch (\Exception $e) {
+				error_log('Mapper::Copy failed '.$currentLogic.' -> '.$newLogic.'\n'.$e);
+				throw $e;
 			}
 		}
 	}
