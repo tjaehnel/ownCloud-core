@@ -1,6 +1,7 @@
 <?php
 
 namespace OC\Files;
+use OCP\IConfig;
 
 /**
  * class Mapper is responsible to translate logical paths to physical paths and reverse
@@ -9,18 +10,18 @@ class Mapper {
 	/** @var string */
 	private $unchangedPhysicalRoot;
 
-	/** @var bool */
-	private $requireDoubleBackslashes;
+	/** @var MapperDatabaseHelper */
+	protected $helper;
 
 	/**
 	 * Constructor
 	 *
 	 * @param string $rootDir
-	 * @param bool $requireDoubleBackslashes
+	 * @param MapperDatabaseHelper $helper
 	 */
-	public function __construct($rootDir, $requireDoubleBackslashes) {
+	public function __construct($rootDir, MapperDatabaseHelper $helper) {
 		$this->unchangedPhysicalRoot = $rootDir;
-		$this->requireDoubleBackslashes = $requireDoubleBackslashes;
+		$this->helper = $helper;
 	}
 
 	/**
@@ -53,14 +54,6 @@ class Mapper {
 
 	/**
 	 * @param string $path
-	 * @return string
-	 */
-	protected function preparePathForLikeQuery($path) {
-		return ($this->requireDoubleBackslashes) ? str_replace('\\', '\\\\', $path) : $path;
-	}
-
-	/**
-	 * @param string $path
 	 * @param bool $isLogicPath indicates if $path is logical or physical
 	 * @param boolean $recursive
 	 * @return void
@@ -79,11 +72,14 @@ class Mapper {
 			// https://github.com/owncloud/core/pull/11583#issuecomment-61470073
 			\OC_DB::executeAudited(
 				'DELETE FROM `*PREFIX*file_map` WHERE `' . $fieldName . '` LIKE ?',
-				array($this->preparePathForLikeQuery($path . '/%'))
+				[$this->helper->escapePathLike($path . '/%')]
 			);
 		}
 
-		\OC_DB::executeAudited('DELETE FROM `*PREFIX*file_map` WHERE `' . $fieldName . '` = ?', array($path));
+		\OC_DB::executeAudited(
+			'DELETE FROM `*PREFIX*file_map` WHERE `' . $fieldName . '` = ?',
+			[$this->helper->escapePathEquals($path)]
+		);
 
 		$cleanRelativePath = $this->resolveRelativePath($path);
 		if ($path !== $cleanRelativePath) {
@@ -105,8 +101,10 @@ class Mapper {
 		$physicPath1 = $this->logicToPhysical($path1, true);
 		$physicPath2 = $this->logicToPhysical($path2, true);
 
-		$sql = 'SELECT * FROM `*PREFIX*file_map` WHERE `logic_path` LIKE ?';
-		$result = \OC_DB::executeAudited($sql, array($path1.'%'));
+		$result = \OC_DB::executeAudited(
+			'SELECT * FROM `*PREFIX*file_map` WHERE `logic_path` LIKE ?',
+			[$this->helper->escapePathLike($path1 . '%')]
+		);
 		$updateQuery = \OC_DB::prepare('UPDATE `*PREFIX*file_map`'
 			.' SET `logic_path` = ?'
 			.' , `logic_path_hash` = ?'
@@ -120,8 +118,11 @@ class Mapper {
 			$newPhysic = $physicPath2.$this->stripRootFolder($currentPhysic, $physicPath1);
 			if ($path1 !== $currentLogic) {
 				try {
-					\OC_DB::executeAudited($updateQuery, array($newLogic, md5($newLogic), $newPhysic, md5($newPhysic),
-						$currentLogic));
+					\OC_DB::executeAudited($updateQuery, [
+						$newLogic, md5($newLogic),
+						$newPhysic, md5($newPhysic),
+						$this->helper->escapePathEquals($currentLogic)
+					]);
 				} catch (\Exception $e) {
 					error_log('Mapper::Copy failed '.$currentLogic.' -> '.$newLogic.'\n'.$e);
 					throw $e;

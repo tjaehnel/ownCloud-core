@@ -7,6 +7,9 @@
  */
 namespace OC\Files\Storage;
 
+use OC\Files\Mapper;
+use OC\Files\MapperDatabaseHelper;
+
 /**
  * for local filestore, we only have to map the paths
  */
@@ -20,8 +23,8 @@ class MappedLocal extends \OC\Files\Storage\Common {
 			$this->datadir .= '/';
 		}
 
-		$dbType = \OC::$server->getConfig()->getSystemValue('dbtype', 'sqlite');
-		$this->mapper = new \OC\Files\Mapper($this->datadir, in_array($dbType, array('mysql', 'pgsql')));
+		$helper = new MapperDatabaseHelper(\OC::$server->getConfig());
+		$this->mapper = new Mapper($this->datadir, $helper);
 	}
 
 	public function __destruct() {
