@@ -72,6 +72,7 @@ class FilesPlugin extends \Sabre\DAV\ServerPlugin
 		$this->server->on('afterBind', array($this, 'sendFileIdHeader'));
 		$this->server->on('afterWriteContent', array($this, 'sendFileIdHeader'));
 		$this->server->on('beforeMethod:GET', array($this, 'handleRangeHeaders'));
+		$this->server->on('beforeMethod:PUT', array($this, 'handleChunkName'));
 	}
 
 	/**
@@ -189,6 +190,27 @@ class FilesPlugin extends \Sabre\DAV\ServerPlugin
 		if (\OC_App::isEnabled('files_encryption')) {
 			// encryption does not support range requests (yet)
 			$request->removeHeader('range');
+		}
+	}
+
+	/**
+	 * Checks if the operation contains a chunked file name.
+	 * If yes, replaces the URI with the regular file and copy
+	 * the chunk name in a temporary header.
+	 *
+	 * @param RequestInterface $request
+	 * @param ResponseInterface $response
+	 */
+	public function handleChunkName(RequestInterface $request, ResponseInterface $response) {
+		if (!is_null($request->getHeader('OC-CHUNKED'))) {
+			$filePath = $request->getUrl();
+			list($path, $name) = \Sabre\HTTP\URLUtil::splitPath($filePath);
+			$info = \OC_FileChunking::decodeName($name);
+			if (!empty($info)) {
+				$filePath = $path . '/' . $info['name'];
+				$request->setUrl($filePath);
+				$request->setHeader('OC-CHUNK-NAME', $name);
+			}
 		}
 	}
 
