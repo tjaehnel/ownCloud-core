@@ -22,20 +22,9 @@
 
 namespace Test\Files;
 
+use OC\Files\MapperDatabaseHelper;
+
 class Mapper extends \Test\TestCase {
-
-	/**
-	 * @var \OC\Files\Mapper
-	 */
-	private $mapper = null;
-
-	protected function setUp() {
-		parent::setUp();
-
-		$dbType = \OC::$server->getConfig()->getSystemValue('dbtype', 'sqlite');
-		$this->mapper = new \OC\Files\Mapper('D:/', in_array($dbType, array('mysql', 'pgsql')));
-	}
-
 	public function removePathData() {
 		return array(
 			array('h€llo', false),
@@ -65,8 +54,7 @@ class Mapper extends \Test\TestCase {
 	 */
 	public function testRemovePath($removePath, $recursive, $isLogical = true) {
 		$dataDir = 'D:\\testing/';
-		$dbType = \OC::$server->getConfig()->getSystemValue('dbtype', 'sqlite');
-		$mapper = new \OC\Files\Mapper($dataDir, in_array($dbType, array('mysql', 'pgsql')));
+		$mapper = new \OC\Files\Mapper($dataDir, new MapperDatabaseHelper($this->getMock('\OCP\IConfig')));
 		$removePathSlash = (substr($removePath, -1) == '/') ? $removePath : $removePath . '/';
 
 		$physicalEuro	= $mapper->logicToPhysical($dataDir . 'h€llo-h€llo.txt', true);
@@ -156,6 +144,7 @@ class Mapper extends \Test\TestCase {
 	 * @dataProvider slugifyPathData
 	 */
 	public function testSlugifyPath($slug, $path, $index = null) {
-		$this->assertEquals($slug, $this->mapper->slugifyPath($path, $index));
+		$mapper = new \OC\Files\Mapper('D:/', new MapperDatabaseHelper($this->getMock('\OCP\IConfig')));
+		$this->assertEquals($slug, $mapper->slugifyPath($path, $index));
 	}
 }

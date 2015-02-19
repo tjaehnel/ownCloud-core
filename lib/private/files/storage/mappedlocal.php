@@ -220,7 +220,7 @@ class MappedLocal extends \OC\Files\Storage\Common {
 		$physicPath1 = $this->getSourcePath($path1);
 		$physicPath2 = $this->getSourcePath($path2);
 		if ($return = rename($physicPath1, $physicPath2)) {
-			// mapper needs to create copies or all children
+			// mapper needs to create copies for all children
 			$this->copyMapping($path1, $path2);
 			$this->cleanMapper($physicPath1, false, true);
 		}
