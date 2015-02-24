@@ -2137,6 +2137,7 @@ class Share extends \OC\Share\Constants {
 				$data['expiration']
 			]);
 		}
+		$query->closeCursor();
 		$connection->commit();
 
 		$id = false;
