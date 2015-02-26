@@ -560,6 +560,16 @@ class OC_Util {
 			$webServerRestart = true;
 		}
 
+		// Check if server running on Windows platform
+		if(OC_Util::runningOnWindows()) {
+			$errors[] = [
+				'error' => $l->t('Microsoft Windows Platform is not supported'),
+				'hint' => $l->t('Running ownCloud Server on the Microsoft Windows ' .
+					'Platform is not supported. Please consider switching to a Linux-based ' .
+					'platform.')
+			];
+		}
+
 		// Check if config folder is writable.
 		if (!is_writable(OC::$configDir) or !is_readable(OC::$configDir)) {
 			$errors[] = array(
