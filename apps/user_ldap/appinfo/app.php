@@ -22,7 +22,8 @@
 *
 */
 
-OCP\App::registerAdmin('user_ldap', 'settings');
+//OCP\App::registerAdmin('user_ldap', 'settings');
+OCP\App::registerAdmin('user_ldap', 'wizard');
 
 $helper = new \OCA\user_ldap\lib\Helper();
 $configPrefixes = $helper->getServerConfigurationPrefixes(true);
