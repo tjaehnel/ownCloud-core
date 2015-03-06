@@ -59,6 +59,7 @@ OCA = OCA || {};
 			if(this.configuration[key] === value) {
 				return false;
 			}
+			this._broadcast('setRequested', {});
 			var url = OC.generateUrl('apps/user_ldap/ajax/wizard.php');
 			var objParams = {
 				ldap_serverconfig_chooser: this.configID,

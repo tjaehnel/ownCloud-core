@@ -16,6 +16,8 @@ OCA = OCA || {};
 			this.tabs = {};
 			this.tabs.server = new OCA.LDAP.Wizard.WizardTabElementary(0, 'weeehaaa');
 			this.$settings = $('#ldapSettings');
+			this.$saveSpinners = $('#ldap .ldap_saving');
+			this.saveProcesses = 0;
 		},
 
 		initControls: function() {
@@ -45,6 +47,24 @@ OCA = OCA || {};
 			}
 		},
 
+		onSetRequested: function(view) {
+			view.saveProcesses += 1;
+			if(view.saveProcesses === 1) {
+				view.showSaveSpinner();
+			}
+		},
+
+		onSetRequestDone: function(view) {
+			if(view.saveProcesses > 0) {
+				view.saveProcesses -= 1;
+				if(view.saveProcesses === 0) {
+					view.hideSaveSpinner();
+				}
+			}
+
+			view.basicStatusCheck(view);
+		},
+
 		setModel: function(configModel) {
 			this.configModel = configModel;
 			for(var i in this.tabs) {
@@ -56,7 +76,8 @@ OCA = OCA || {};
 			// setModel() method.
 			// alternative: make Elementary Tab a Publisher as well.
 			this.configModel.on('configLoaded', this.basicStatusCheck, this);
-			this.configModel.on('setCompleted', this.basicStatusCheck, this);
+			this.configModel.on('setRequested', this.onSetRequested, this);
+			this.configModel.on('setCompleted', this.onSetRequestDone, this);
 		},
 
 		enableTabs: function() {
@@ -71,6 +92,16 @@ OCA = OCA || {};
 			$('.ldap_action_continue').attr('disabled', 'disabled');
 			$('.ldap_action_back').attr('disabled', 'disabled');
 			this.$settings.tabs('option', 'disabled', [1, 2, 3, 4, 5]);
+		},
+
+		showSaveSpinner: function() {
+			this.$saveSpinners.removeClass('hidden');
+			$('#ldap *').addClass('save-cursor');
+		},
+
+		hideSaveSpinner: function() {
+			this.$saveSpinners.addClass('hidden');
+			$('#ldap *').removeClass('save-cursor');
 		},
 
 		_requestConfig: function(configID) {
