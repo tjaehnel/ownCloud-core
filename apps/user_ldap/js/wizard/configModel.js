@@ -14,6 +14,7 @@ OCA = OCA || {};
 		init: function () {
 			this.configuration = {};
 			this.subscribers   = {};
+			this.detectors     = [];
 			this.loadingConfig = false;
 		},
 
@@ -48,6 +49,12 @@ OCA = OCA || {};
 			$.post(url, params, function (result) { model._processDeleteConfig(model, result, configID) });
 		},
 
+		callWizard: function(params, callback, detector) {
+			var url = OC.generateUrl('apps/user_ldap/ajax/wizard.php');
+			var model = this;
+			$.post(url, params, function (result) { callback(model, detector, result) });
+		},
+
 		save: function() {
 
 		},
@@ -72,11 +79,26 @@ OCA = OCA || {};
 			$.post(url, strParams, function(result) { model._processSetResult(model, result, objParams) });
 		},
 
+		update: function(key, value) {
+			if(this.configuration[key] === value) {
+				return false;
+			}
+			var configPart = {};
+			configPart[key] = value;
+			this._broadcast('configUpdated', configPart);
+		},
+
 		on: function(name, fn, context) {
 			if(_.isUndefined(this.subscribers[name])) {
 				this.subscribers[name] = [];
 			}
 			this.subscribers[name].push({fn: fn, context: context});
+		},
+
+		registerDetector: function(detector) {
+			if(detector instanceof OCA.LDAP.Wizard.WizardDetectorGeneric) {
+				this.detectors.push(detector);
+			}
 		},
 
 		_broadcast: function(name, params) {
@@ -86,7 +108,6 @@ OCA = OCA || {};
 			var subscribers = this.subscribers[name];
 			var subscriberCount = subscribers.length;
 			for(var i = 0; i < subscriberCount; i++) {
-				var methodName = subscribers[i]
 				subscribers[i]['fn'](subscribers[i]['context'], params);
 			}
 		},
@@ -115,6 +136,16 @@ OCA = OCA || {};
 				errorMessage: _.isUndefined(result.message) ? '' : result.message
 			};
 			model._broadcast('setCompleted', payload);
+
+			// let detectors run
+			// NOTE: detector's changes will not result in new _processSetResult
+			// calls, … in case they interfere it is because of this ;)
+			var detectorCount = model.detectors.length;
+			for(var i = 0; i < detectorCount; i++) {
+				if(model.detectors[i].triggersOn(params.cfgkey)) {
+					model.detectors[i].run(model, model.configID);
+				}
+			}
 		},
 
 		_processNewConfigPrefix: function(model, result, copyCurrent) {

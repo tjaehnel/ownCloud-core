@@ -42,7 +42,8 @@ OCA = OCA || {};
 		setModel: function(configModel) {
 			this._super(configModel);
 			this.configModel.on('configLoaded', this.onConfigLoaded, this);
-			this.configModel.on('setCompleted', this.onSaveItem, this);
+			this.configModel.on('configUpdated', this.onConfigLoaded, this);
+			this.configModel.on('setCompleted', this.onItemSaved, this);
 			this.configModel.on('newConfiguration', this.onNewConfiguration, this);
 			this.configModel.on('deleteConfiguration', this.onDeleteConfiguration, this);
 			this._enableConfigChooser();
@@ -158,7 +159,7 @@ OCA = OCA || {};
 		 * @param {WizardTabElementary} view
 		 * @param {Object} result
 		 */
-		onSaveItem: function(view, result) {
+		onItemSaved: function(view, result) {
 			if(!_.isUndefined(view.managedItems[result.key])) {
 				var methodName = view.managedItems[result.key];
 				view[methodName](result.value);

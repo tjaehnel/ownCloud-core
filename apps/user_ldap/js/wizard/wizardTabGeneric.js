@@ -9,8 +9,6 @@ OCA = OCA || {};
 
 (function() {
 
-	//var WizardTabGeneric = new OCA.LDAP.Wizard.WizardObject();
-
 	var WizardTabGeneric = OCA.LDAP.Wizard.WizardObject.subClass({
 		init: function(tabIndex, tabID) {
 			this.tabIndex = tabIndex;

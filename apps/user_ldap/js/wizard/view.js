@@ -76,6 +76,7 @@ OCA = OCA || {};
 			// setModel() method.
 			// alternative: make Elementary Tab a Publisher as well.
 			this.configModel.on('configLoaded', this.basicStatusCheck, this);
+			this.configModel.on('configUpdated', this.basicStatusCheck, this);
 			this.configModel.on('setRequested', this.onSetRequested, this);
 			this.configModel.on('setCompleted', this.onSetRequestDone, this);
 		},

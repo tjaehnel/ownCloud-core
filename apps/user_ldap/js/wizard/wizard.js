@@ -5,8 +5,12 @@
  */
 
 $(document).ready(function() {
+	var portDetector = new OCA.LDAP.Wizard.WizardDetectorPort();
+	portDetector.init();
+
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();
+	model.registerDetector(portDetector);
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();
