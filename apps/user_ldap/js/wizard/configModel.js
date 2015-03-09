@@ -12,9 +12,9 @@ OCA = OCA || {};
 
 	ConfigModel.prototype = {
 		init: function () {
-			this.configuration = {};
-			this.subscribers   = {};
-			this.detectors     = [];
+			this.configuration     = {};
+			this.subscribers       = {};
+			this.detectors         = [];
 			this.loadingConfig = false;
 		},
 
@@ -52,7 +52,10 @@ OCA = OCA || {};
 		callWizard: function(params, callback, detector) {
 			var url = OC.generateUrl('apps/user_ldap/ajax/wizard.php');
 			var model = this;
-			$.post(url, params, function (result) { callback(model, detector, result) });
+			var request = $.post(url, params, function (result) {
+				callback(model, detector, result)
+			});
+			return request;
 		},
 
 		save: function() {
@@ -83,6 +86,7 @@ OCA = OCA || {};
 			if(this.configuration[key] === value) {
 				return false;
 			}
+			this.configuration[key] = value;
 			var configPart = {};
 			configPart[key] = value;
 			this._broadcast('configUpdated', configPart);
@@ -93,6 +97,12 @@ OCA = OCA || {};
 				this.subscribers[name] = [];
 			}
 			this.subscribers[name].push({fn: fn, context: context});
+		},
+
+		setDetectorQueue: function(detectorQueue) {
+			if(detectorQueue instanceof OCA.LDAP.Wizard.WizardDetectorQueue) {
+				this.detectorQueue = detectorQueue;
+			}
 		},
 
 		registerDetector: function(detector) {
@@ -140,10 +150,19 @@ OCA = OCA || {};
 			// let detectors run
 			// NOTE: detector's changes will not result in new _processSetResult
 			// calls, … in case they interfere it is because of this ;)
+			if(_.isUndefined(model.detectorQueue)) {
+				console.log("DetectorQueue was not set, detectors will not be fired");
+				return;
+			}
 			var detectorCount = model.detectors.length;
 			for(var i = 0; i < detectorCount; i++) {
 				if(model.detectors[i].triggersOn(params.cfgkey)) {
-					model.detectors[i].run(model, model.configID);
+					//var detector = model.detectors[i];
+					(function (detector) {
+						model.detectorQueue.add(function() {
+							return detector.run(model, model.configID);
+						});
+					})(model.detectors[i]);
 				}
 			}
 		},

@@ -9,7 +9,7 @@ OCA = OCA || {};
 
 (function() {
 
-	var WizardDetectorPort = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+	var WizardDetectorBaseDN = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
 		init: function() {
 			this.setTrigger([
 				'ldap_host',
@@ -20,8 +20,17 @@ OCA = OCA || {};
 		},
 
 		run: function(model, configID) {
+			if(    !model.configuration['ldap_host']
+				|| !model.configuration['ldap_port']
+				|| !model.configuration['ldap_dn']
+				|| !model.configuration['ldap_agent_password']
+				)
+			{
+				return false;
+			}
+
 			var params = OC.buildQueryString({
-				action: 'guessPortAndTLS',
+				action: 'guessBaseDN',
 				ldap_serverconfig_chooser: configID
 			});
 			return model.callWizard(params, this.processResult, this);
@@ -34,11 +43,11 @@ OCA = OCA || {};
 					// update and not set method, as values are already stored
 					model.update(id, result.changes[id]);
 				}
+			} else {
+				// TODO show notification
 			}
-			console.log(result);
-			console.log(model.configuration);
 		}
 	});
 
-	OCA.LDAP.Wizard.WizardDetectorPort = WizardDetectorPort;
+	OCA.LDAP.Wizard.WizardDetectorBaseDN = WizardDetectorBaseDN;
 })();

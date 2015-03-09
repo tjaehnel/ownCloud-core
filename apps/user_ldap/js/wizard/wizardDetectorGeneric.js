@@ -23,6 +23,7 @@ OCA = OCA || {};
 
 		run: function(model, configID) {
 			// to be implemented by subClass
+			return false;
 		}
 	});
 

@@ -14,7 +14,6 @@ OCA = OCA || {};
 			this.tabIndex = tabIndex;
 			this.tabID = tabID;
 			this.spinner = '<img class="wizSpinner" src="'+ OC.imagePath('core', 'loading.gif') +'">';
-			console.log('this was generic');
 		},
 
 		setManagedItems: function(managedItems) {
