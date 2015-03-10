@@ -25,11 +25,11 @@ OCA = OCA || {};
 			this.configModel = configModel;
 		},
 
-		setElementValue: function(elementID, value) {
-			var $element = $(elementID);
+		setElementValue: function($element, value) {
+			//var $element = $(elementID);
 			// deal with check box
 			if($element.is('input[type=checkbox]')) {
-				this._setCheckBox(elementID, value);
+				this._setCheckBox($element, value);
 				return;
 			}
 
@@ -83,11 +83,11 @@ OCA = OCA || {};
 			this.configModel.set($element.attr('id'), value);
 		},
 
-		_setCheckBox: function(elementID, value) {
+		_setCheckBox: function($element, value) {
 			if(parseInt(value, 10) === 1) {
-				$(elementID).attr('checked', 'checked');
+				$element.attr('checked', 'checked');
 			} else {
-				$(elementID).removeAttr('checked');
+				$element.removeAttr('checked');
 			}
 		}
 

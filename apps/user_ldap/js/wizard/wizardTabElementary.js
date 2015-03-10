@@ -31,6 +31,14 @@ OCA = OCA || {};
 				'ldap_base': 'setBase',
 				'ldap_experienced_admin': 'setExperiencedAdmin'
 			});
+			this.jqObjects = {
+				host: $('#ldap_host'),
+				port: $('#ldap_port'),
+				agent: $('#ldap_dn'),
+				agentPassword: $('#ldap_agent_password'),
+				base: $('#ldap_base'),
+				xpAdmin: $('#ldap_experienced_admin')
+			};
 		},
 
 		/**
@@ -67,7 +75,7 @@ OCA = OCA || {};
 		 * @param {string} host
 		 */
 		setHost: function(host) {
-			this.setElementValue('#ldap_host', host);
+			this.setElementValue(this.jqObjects.host, host);
 		},
 
 		/**
@@ -76,7 +84,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getHost: function() {
-			return $('#ldap_host').val();
+			return this.jqObjects.host.val();
 		},
 
 		/**
@@ -85,7 +93,7 @@ OCA = OCA || {};
 		 * @param {string} port
 		 */
 		setPort: function(port) {
-			this.setElementValue('#ldap_port', port);
+			this.setElementValue(this.jqObjects.port, port);
 		},
 
 		/**
@@ -94,14 +102,14 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getPort: function() {
-			return $('#ldap_port').val();
+			return this.jqObjects.port.val();
 		},
 
 		/**
 		 * enables the port input field
 		 */
 		enablePort: function() {
-			this.enableElement($('#ldap_port'));
+			this.enableElement(this.jqObjects.port);
 			this.removeSpinner('#ldap_port');
 		},
 
@@ -109,7 +117,7 @@ OCA = OCA || {};
 		 * disables the port input field
 		 */
 		disablePort: function() {
-			this.disableElement($('#ldap_port'));
+			this.disableElement(this.jqObjects.port);
 			this.attachSpinner('#ldap_port');
 		},
 
@@ -119,7 +127,7 @@ OCA = OCA || {};
 		 * @param {string} agentDN
 		 */
 		setAgentDN: function(agentDN) {
-			this.setElementValue('#ldap_dn', agentDN);
+			this.setElementValue(this.jqObjects.agent, agentDN);
 		},
 
 		/**
@@ -128,7 +136,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getAgentDN: function() {
-			return $('#ldap_dn').val();
+			return this.jqObjects.agent.val();
 		},
 
 		/**
@@ -137,7 +145,7 @@ OCA = OCA || {};
 		 * @param {string} agentPwd
 		 */
 		setAgentPwd: function(agentPwd) {
-			this.setElementValue('#ldap_agent_password', agentPwd);
+			this.setElementValue(this.jqObjects.agentPassword, agentPwd);
 		},
 
 		/**
@@ -146,7 +154,7 @@ OCA = OCA || {};
 		 * @returns {*|jQuery}
 		 */
 		getAgentPwd: function() {
-			return $('#ldap_agent_password').val();
+			return this.jqObjects.agentPassword.val();
 		},
 
 		/**
@@ -155,7 +163,7 @@ OCA = OCA || {};
 		 * @param {string} bases
 		 */
 		setBase: function(bases) {
-			this.setElementValue('#ldap_base', bases);
+			this.setElementValue(this.jqObjects.base, bases);
 		},
 
 		/**
@@ -163,7 +171,7 @@ OCA = OCA || {};
 		 * @returns {*|jQuery}
 		 */
 		getBase: function() {
-			return $('#ldap_base').val();
+			return this.jqObjects.base.val();
 		},
 
 		/**
@@ -171,7 +179,7 @@ OCA = OCA || {};
 		 * always caused by a detector.
 		 */
 		enableBase: function() {
-			this.enableElement($('#ldap_base'));
+			this.enableElement(this.jqObjects.base);
 			this.attachSpinner('#ldap_base');
 		},
 
@@ -179,7 +187,7 @@ OCA = OCA || {};
 		 * disables the base dn field. Also removes a possible spinner.
 		 */
 		disableBase: function() {
-			this.disableElement($('#ldap_base'));
+			this.disableElement(this.jqObjects.base);
 			this.removeSpinner('#ldap_base');
 		},
 
@@ -189,7 +197,7 @@ OCA = OCA || {};
 		 * @param {string} xpAdminMode contains an int
 		 */
 		setExperiencedAdmin: function(xpAdminMode) {
-			this.setElementValue('#ldap_experienced_admin', xpAdminMode);
+			this.setElementValue(this.jqObjects.xpAdmin, xpAdminMode);
 		},
 
 		/**
