@@ -101,14 +101,16 @@ OCA = OCA || {};
 		 * enables the port input field
 		 */
 		enablePort: function() {
-			$('#ldap_port').prop('disabled', false);
+			this.enableElement($('#ldap_port'));
+			this.removeSpinner('#ldap_port');
 		},
 
 		/**
 		 * disables the port input field
 		 */
 		disablePort: function() {
-			$('#ldap_port').prop('disabled', 'disabled');
+			this.disableElement($('#ldap_port'));
+			this.attachSpinner('#ldap_port');
 		},
 
 		/**
@@ -165,17 +167,20 @@ OCA = OCA || {};
 		},
 
 		/**
-		 * enables the port input field
+		 * enables the base dn field. Also attaches a spinner, because it is
+		 * always caused by a detector.
 		 */
 		enableBase: function() {
-			$('#ldap_base').prop('disabled', false);
+			this.enableElement($('#ldap_base'));
+			this.attachSpinner('#ldap_base');
 		},
 
 		/**
-		 * disables the port input field
+		 * disables the base dn field. Also removes a possible spinner.
 		 */
 		disableBase: function() {
-			$('#ldap_base').prop('disabled', 'disabled');
+			this.disableElement($('#ldap_base'));
+			this.removeSpinner('#ldap_base');
 		},
 
 		/**

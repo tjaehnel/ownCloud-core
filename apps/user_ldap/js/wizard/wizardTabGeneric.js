@@ -13,7 +13,7 @@ OCA = OCA || {};
 		init: function(tabIndex, tabID) {
 			this.tabIndex = tabIndex;
 			this.tabID = tabID;
-			this.spinner = '<img class="wizSpinner" src="'+ OC.imagePath('core', 'loading.gif') +'">';
+			this.spinner = $('.ldapSpinner').first().clone().removeClass('hidden');
 		},
 
 		setManagedItems: function(managedItems) {
@@ -38,6 +38,27 @@ OCA = OCA || {};
 				value = value.join("\n");
 			}
 			$element.val(value);
+		},
+
+		enableElement: function($element) {
+			$element.prop('disabled', false);
+		},
+
+		disableElement: function($element) {
+			$element.prop('disabled', 'disabled');
+		},
+
+		attachSpinner: function(elementID) {
+			if($(elementID + ' + .ldapSpinner').length == 0) {
+				var spinner = this.spinner.clone();
+				$(spinner).insertAfter($(elementID));
+				//$(elementID + " + img + button").css('display', 'none'); ???
+			}
+		},
+
+		removeSpinner: function(elementID) {
+			$(elementID+' + .ldapSpinner').remove();
+			//$(elementID + " + button").css('display', 'inline'); ???
 		},
 
 		_enableAutoSave: function() {
@@ -68,10 +89,6 @@ OCA = OCA || {};
 			} else {
 				$(elementID).removeAttr('checked');
 			}
-		},
-
-		onTabActivate: function() {
-			// TODO: use for initialization
 		}
 
 	});
