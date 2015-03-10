@@ -117,6 +117,13 @@ OCA = OCA || {};
 			}
 		},
 
+		requestConfigurationTest: function() {
+			var url = OC.generateUrl('apps/user_ldap/ajax/testConfiguration.php');
+			var params = OC.buildQueryString(this.configuration);
+			var model = this;
+			$.post(url, params, function(result) { model._processTestResult(model, result) });
+		},
+
 		_resetDetectorQueue: function() {
 			if(!_.isUndefined(this.detectorQueue)) {
 				this.detectorQueue.reset();
@@ -183,6 +190,13 @@ OCA = OCA || {};
 					})(model.detectors[i]);
 				}
 			}
+		},
+
+		_processTestResult: function(model, result) {
+			var payload = {
+				isSuccess: (result.status === 'success')
+			};
+			model._broadcast('configurationTested', payload);
 		},
 
 		_processNewConfigPrefix: function(model, result, copyCurrent) {

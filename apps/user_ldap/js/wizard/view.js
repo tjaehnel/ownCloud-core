@@ -11,6 +11,9 @@ OCA = OCA || {};
 	var WizardView = function() {};
 
 	WizardView.prototype = {
+		STATUS_ERROR: 0,
+		STATUS_INCOMPLETE: 1,
+		STATUS_SUCCESS: 2,
 
 		init: function () {
 			this.tabs = {};
@@ -47,6 +50,36 @@ OCA = OCA || {};
 			}
 		},
 
+		functionalityCheck: function() {
+			// this method should be called only if necessary, because it may
+			// cause an LDAP request!
+			var host  = this.tabs.server.getHost();
+			var port  = this.tabs.server.getPort();
+			var base  = this.tabs.server.getBase();
+			// TODO implement following when specific views are implemented
+			var userFilter = false;
+			var loginFilter = false;
+
+			if(host && port && base && userFilter && loginFilter) {
+				this.configModel.requestConfigurationTest();
+			} else {
+				this._updateStatusIndicator(this.STATUS_INCOMPLETE);
+			}
+		},
+
+		considerFunctionalityCheck: function(changeSet) {
+			var testTriggers = [
+				'ldap_host', 'ldap_port', 'ldap_dn', 'ldap_agent_password',
+				'ldap_base', 'ldap_userlist_filter', 'ldap_login_filter'
+			];
+			for(var key in changeSet) {
+				if($.inArray(key, testTriggers)) {
+					this.functionalityCheck();
+					return;
+				}
+			}
+		},
+
 		onSetRequested: function(view) {
 			view.saveProcesses += 1;
 			if(view.saveProcesses === 1) {
@@ -54,7 +87,7 @@ OCA = OCA || {};
 			}
 		},
 
-		onSetRequestDone: function(view) {
+		onSetRequestDone: function(view, result) {
 			if(view.saveProcesses > 0) {
 				view.saveProcesses -= 1;
 				if(view.saveProcesses === 0) {
@@ -63,6 +96,27 @@ OCA = OCA || {};
 			}
 
 			view.basicStatusCheck(view);
+			var param = {};
+			param[result.key] = 1;
+			view.considerFunctionalityCheck(param);
+		},
+
+		onTestCompleted: function(view, result) {
+			if(result.isSuccess) {
+				view._updateStatusIndicator(view.STATUS_SUCCESS);
+			} else {
+				view._updateStatusIndicator(view.STATUS_ERROR);
+			}
+		},
+
+		onConfigLoaded: function(view) {
+			view.basicStatusCheck(view);
+			view.functionalityCheck();
+		},
+
+		onConfigUpdated: function(view, changeSet) {
+			view.basicStatusCheck(view);
+			view.considerFunctionalityCheck(changeSet);
 		},
 
 		setModel: function(configModel) {
@@ -75,10 +129,11 @@ OCA = OCA || {};
 			// for now this works, because tabs are supposed to register their listeners in their
 			// setModel() method.
 			// alternative: make Elementary Tab a Publisher as well.
-			this.configModel.on('configLoaded', this.basicStatusCheck, this);
-			this.configModel.on('configUpdated', this.basicStatusCheck, this);
+			this.configModel.on('configLoaded', this.onConfigLoaded, this);
+			this.configModel.on('configUpdated', this.onConfigUpdated, this);
 			this.configModel.on('setRequested', this.onSetRequested, this);
 			this.configModel.on('setCompleted', this.onSetRequestDone, this);
+			this.configModel.on('configurationTested', this.onTestCompleted, this);
 		},
 
 		enableTabs: function() {
@@ -120,6 +175,36 @@ OCA = OCA || {};
 			this.disableTabs();
 
 			this._requestConfig(this.tabs.server.getConfigID());
+		},
+
+		_updateStatusIndicator: function(state) {
+			var $indicator = $('.ldap_config_state_indicator');
+			var $indicatorLight = $('.ldap_config_state_indicator_sign');
+
+			switch(state) {
+				case this.STATUS_ERROR:
+					$indicator.text(t('user_ldap',
+						'Configuration incorrect'
+					));
+					$indicator.removeClass('ldap_grey');
+					$indicatorLight.addClass('error');
+					$indicatorLight.removeClass('success');
+					break;
+				case this.STATUS_INCOMPLETE:
+					$indicator.text(t('user_ldap',
+						'Configuration incomplete'
+					));
+					$indicator.removeClass('ldap_grey');
+					$indicatorLight.removeClass('error');
+					$indicatorLight.removeClass('success');
+					break;
+				case this.STATUS_SUCCESS:
+					$indicator.text(t('user_ldap', 'Configuration OK'));
+					$indicator.addClass('ldap_grey');
+					$indicatorLight.removeClass('error');
+					$indicatorLight.addClass('success');
+					break;
+			}
 		},
 
 		_controlBack: function(view) {
