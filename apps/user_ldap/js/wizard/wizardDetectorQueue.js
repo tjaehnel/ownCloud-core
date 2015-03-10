@@ -14,6 +14,15 @@ OCA = OCA || {};
 			this.isRunning = false;
 		},
 
+		reset: function() {
+			this.queue = [];
+			if(!_.isUndefined(this.runningRequest)) {
+				this.runningRequest.abort();
+				delete this.runningRequest;
+			}
+			this.isRunning = false;
+		},
+
 		add: function(callback) {
 			this.queue.push(callback);
 			this.next();
@@ -35,9 +44,9 @@ OCA = OCA || {};
 				this.next();
 				return;
 			}
+			this.runningRequest = request;
 
 			var detectorQueue = this;
-			//FIXME next() is triggered to early, model is not up to date at that point
 			$.when(request).then(function() {
 				detectorQueue.isRunning = false;
 				detectorQueue.next();

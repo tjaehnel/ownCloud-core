@@ -22,6 +22,8 @@ OCA = OCA || {};
 			if(this.loadingConfig) {
 				return;
 			}
+			this._resetDetectorQueue();
+
 			this.configID = configID;
 			var url = OC.generateUrl('apps/user_ldap/ajax/getConfiguration.php');
 			var params = OC.buildQueryString({ldap_serverconfig_chooser: configID});
@@ -31,6 +33,8 @@ OCA = OCA || {};
 		},
 
 		newConfig: function(copyCurrent) {
+			this._resetDetectorQueue();
+
 			var url = OC.generateUrl('apps/user_ldap/ajax/getNewServerConfigPrefix.php');
 			var params = {};
 			if(copyCurrent === true) {
@@ -110,6 +114,12 @@ OCA = OCA || {};
 		setDetectorQueue: function(detectorQueue) {
 			if(detectorQueue instanceof OCA.LDAP.Wizard.WizardDetectorQueue) {
 				this.detectorQueue = detectorQueue;
+			}
+		},
+
+		_resetDetectorQueue: function() {
+			if(!_.isUndefined(this.detectorQueue)) {
+				this.detectorQueue.reset();
 			}
 		},
 

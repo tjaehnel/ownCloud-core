@@ -40,7 +40,6 @@ OCA = OCA || {};
 		},
 
 		processResult: function(model, detector, result) {
-			// TODO: catch if user switched configuration while we're running
 			model.notifyAboutDetectionCompletion(detector.getTargetKey());
 			if(result.status === 'success') {
 				for (var id in result.changes) {
