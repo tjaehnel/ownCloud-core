@@ -92,6 +92,14 @@ OCA = OCA || {};
 			this._broadcast('configUpdated', configPart);
 		},
 
+		notifyAboutDetectionStart: function(key) {
+			this._broadcast('detectionStarted', key);
+		},
+
+		notifyAboutDetectionCompletion: function(key) {
+			this._broadcast('detectionCompleted', key);
+		},
+
 		on: function(name, fn, context) {
 			if(_.isUndefined(this.subscribers[name])) {
 				this.subscribers[name] = [];

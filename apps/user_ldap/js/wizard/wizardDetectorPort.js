@@ -20,6 +20,7 @@ OCA = OCA || {};
 		},
 
 		run: function(model, configID) {
+			model.notifyAboutDetectionStart('ldap_port');
 			var params = OC.buildQueryString({
 				action: 'guessPortAndTLS',
 				ldap_serverconfig_chooser: configID
@@ -29,6 +30,7 @@ OCA = OCA || {};
 
 		processResult: function(model, detector, result) {
 			// TODO: catch if user switched configuration while we're running
+			model.notifyAboutDetectionCompletion('ldap_port');
 			if(result.status === 'success') {
 				for (var id in result.changes) {
 					// update and not set method, as values are already stored

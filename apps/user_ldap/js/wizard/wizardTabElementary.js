@@ -46,6 +46,8 @@ OCA = OCA || {};
 			this.configModel.on('setCompleted', this.onItemSaved, this);
 			this.configModel.on('newConfiguration', this.onNewConfiguration, this);
 			this.configModel.on('deleteConfiguration', this.onDeleteConfiguration, this);
+			this.configModel.on('detectionStarted', this.onDetectionStarted, this);
+			this.configModel.on('detectionCompleted', this.onDetectionCompleted, this);
 			this._enableConfigChooser();
 			this._enableConfigButtons();
 		},
@@ -68,6 +70,11 @@ OCA = OCA || {};
 			this.setElementValue('#ldap_host', host);
 		},
 
+		/**
+		 * returns the host value
+		 *
+		 * @returns {string}
+		 */
 		getHost: function() {
 			return $('#ldap_host').val();
 		},
@@ -81,8 +88,27 @@ OCA = OCA || {};
 			this.setElementValue('#ldap_port', port);
 		},
 
+		/**
+		 * returns the port value
+		 *
+		 * @returns {string}
+		 */
 		getPort: function() {
 			return $('#ldap_port').val();
+		},
+
+		/**
+		 * enables the port input field
+		 */
+		enablePort: function() {
+			$('#ldap_port').prop('disabled', false);
+		},
+
+		/**
+		 * disables the port input field
+		 */
+		disablePort: function() {
+			$('#ldap_port').prop('disabled', 'disabled');
 		},
 
 		/**
@@ -94,6 +120,11 @@ OCA = OCA || {};
 			this.setElementValue('#ldap_dn', agentDN);
 		},
 
+		/**
+		 * returns the agent DN
+		 *
+		 * @returns {string}
+		 */
 		getAgentDN: function() {
 			return $('#ldap_dn').val();
 		},
@@ -107,6 +138,11 @@ OCA = OCA || {};
 			this.setElementValue('#ldap_agent_password', agentPwd);
 		},
 
+		/**
+		 * returns the agent password
+		 *
+		 * @returns {*|jQuery}
+		 */
 		getAgentPwd: function() {
 			return $('#ldap_agent_password').val();
 		},
@@ -120,8 +156,26 @@ OCA = OCA || {};
 			this.setElementValue('#ldap_base', bases);
 		},
 
+		/**
+		 * returns the base DN
+		 * @returns {*|jQuery}
+		 */
 		getBase: function() {
 			return $('#ldap_base').val();
+		},
+
+		/**
+		 * enables the port input field
+		 */
+		enableBase: function() {
+			$('#ldap_base').prop('disabled', false);
+		},
+
+		/**
+		 * disables the port input field
+		 */
+		disableBase: function() {
+			$('#ldap_base').prop('disabled', 'disabled');
 		},
 
 		/**
@@ -213,6 +267,34 @@ OCA = OCA || {};
 				}
 			} else {
 				OC.Notification.showTemporary(result.errorMessage);
+			}
+		},
+
+		/**
+		 * disables affected, managed fields if a detector is running against them
+		 *
+		 * @param {WizardTabElementary} view
+		 * @param {string} key
+		 */
+		onDetectionStarted: function(view, key) {
+			if(key === 'ldap_port') {
+				view.disablePort();
+			} else if(key === 'ldap_dn') {
+				view.disableBase();
+			}
+		},
+
+		/**
+		 * enables affected, managed fields after a detector was run against them
+		 *
+		 * @param {WizardTabElementary} view
+		 * @param {string} key
+		 */
+		onDetectionCompleted: function(view, key) {
+			if(key === 'ldap_port') {
+				view.enablePort();
+			} else if(key === 'ldap_dn') {
+				view.enableBase();
 			}
 		},
 
