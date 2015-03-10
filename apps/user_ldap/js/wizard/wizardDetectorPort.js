@@ -20,7 +20,19 @@ OCA = OCA || {};
 			this.setTargetKey('ldap_port');
 		},
 
+		overrideErrorMessage: function(message) {
+			if(message === 'Invalid credentials') {
+				return t('user_ldap', 'Please check the credentials, they seem to be wrong.');
+			}
+			return t('user_ldap', 'Please specify the port, it could not be auto-detected.');
+		},
+
 		run: function(model, configID) {
+			if(model.configuration['ldap_port']) {
+				// don't attempt to overwrite a configured port
+				return false;
+			}
+
 			model.notifyAboutDetectionStart('ldap_port');
 			var params = OC.buildQueryString({
 				action: 'guessPortAndTLS',

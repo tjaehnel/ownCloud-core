@@ -35,6 +35,10 @@ OCA = OCA || {};
 			return false;
 		},
 
+		overrideErrorMessage: function(message) {
+			return message;
+		},
+
 		processResult: function(model, detector, result) {
 			// TODO: catch if user switched configuration while we're running
 			model.notifyAboutDetectionCompletion(detector.getTargetKey());
@@ -44,7 +48,10 @@ OCA = OCA || {};
 					model.update(id, result.changes[id]);
 				}
 			} else {
-				// TODO show notification
+				var message = detector.overrideErrorMessage(result.message);
+				if(!_.isUndefined(message)) {
+					OC.Notification.showTemporary(message);
+				}
 			}
 		}
 	});
