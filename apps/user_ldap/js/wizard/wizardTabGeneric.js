@@ -79,7 +79,6 @@ OCA = OCA || {};
 			} else {
 				value = $element.val();
 			}
-			//TODO: show spinner
 			this.configModel.set($element.attr('id'), value);
 		},
 

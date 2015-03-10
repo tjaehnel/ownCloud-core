@@ -17,6 +17,7 @@ OCA = OCA || {};
 				'ldap_dn',
 				'ldap_agent_password'
 			]);
+			this.setTargetKey('ldap_dn');
 		},
 
 		run: function(model, configID) {
@@ -28,24 +29,12 @@ OCA = OCA || {};
 			{
 				return false;
 			}
-
+			model.notifyAboutDetectionStart('ldap_dn');
 			var params = OC.buildQueryString({
 				action: 'guessBaseDN',
 				ldap_serverconfig_chooser: configID
 			});
 			return model.callWizard(params, this.processResult, this);
-		},
-
-		processResult: function(model, detector, result) {
-			// TODO: catch if user switched configuration while we're running
-			if(result.status === 'success') {
-				for (var id in result.changes) {
-					// update and not set method, as values are already stored
-					model.update(id, result.changes[id]);
-				}
-			} else {
-				// TODO show notification
-			}
 		}
 	});
 

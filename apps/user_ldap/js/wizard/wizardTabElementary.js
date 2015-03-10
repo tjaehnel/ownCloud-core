@@ -180,7 +180,7 @@ OCA = OCA || {};
 		 */
 		enableBase: function() {
 			this.enableElement(this.jqObjects.base);
-			this.attachSpinner('#ldap_base');
+			this.removeSpinner('#ldap_base');
 		},
 
 		/**
@@ -188,7 +188,7 @@ OCA = OCA || {};
 		 */
 		disableBase: function() {
 			this.disableElement(this.jqObjects.base);
-			this.removeSpinner('#ldap_base');
+			this.attachSpinner('#ldap_base');
 		},
 
 		/**
@@ -230,7 +230,6 @@ OCA = OCA || {};
 			if(!_.isUndefined(view.managedItems[result.key])) {
 				var methodName = view.managedItems[result.key];
 				view[methodName](result.value);
-				//TODO: hide spinner
 				if(!result.isSuccess) {
 					console.log(result.errorMessage);
 					// TODO show notification (if we are active tab?)
