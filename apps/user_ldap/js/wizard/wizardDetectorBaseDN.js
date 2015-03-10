@@ -15,7 +15,8 @@ OCA = OCA || {};
 				'ldap_host',
 				'ldap_port',
 				'ldap_dn',
-				'ldap_agent_password'
+				'ldap_agent_password',
+				'ldap_base'
 			]);
 			this.setTargetKey('ldap_dn');
 		},
@@ -34,6 +35,7 @@ OCA = OCA || {};
 				|| !model.configuration['ldap_port']
 				|| !model.configuration['ldap_dn']
 				|| !model.configuration['ldap_agent_password']
+				|| model.configuration['ldap_base']
 				)
 			{
 				return false;
