@@ -80,6 +80,7 @@ OCA = OCA || {};
 				value = $element.val();
 			}
 			this.configModel.set($element.attr('id'), value);
+			//TODO react on if set returned false
 		},
 
 		_setCheckBox: function($element, value) {
