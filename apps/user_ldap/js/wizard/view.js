@@ -8,13 +8,26 @@ OCA = OCA || {};
 
 (function() {
 
+	/**
+	 * @classdesc main view class. It takes care of tab-unrelated control
+	 * elements (status bar, control buttons) and does or requests configuration
+	 * checks. It also manages the separate tab views.
+	 *
+	 * @constructor
+	 */
 	var WizardView = function() {};
 
 	WizardView.prototype = {
+		/** @constant {number} */
 		STATUS_ERROR: 0,
+		/** @constant {number} */
 		STATUS_INCOMPLETE: 1,
+		/** @constant {number} */
 		STATUS_SUCCESS: 2,
 
+		/**
+		 * initializes the instance. Always call it after creating the instance.
+		 */
 		init: function () {
 			this.tabs = {};
 			this.tabs.server = new OCA.LDAP.Wizard.WizardTabElementary(0, 'weeehaaa');
@@ -23,6 +36,9 @@ OCA = OCA || {};
 			this.saveProcesses = 0;
 		},
 
+		/**
+		 * applies click events to the forward and backword buttons
+		 */
 		initControls: function() {
 			var view = this;
 			$('.ldap_action_continue').click(function(event) {
@@ -36,6 +52,10 @@ OCA = OCA || {};
 			});
 		},
 
+		/**
+		 * checks certain config values for completeness and depending on them
+		 * enables or disables non-elementary tabs.
+		 */
 		basicStatusCheck: function(view) {
 			var host  = view.tabs.server.getHost();
 			var port  = view.tabs.server.getPort();
@@ -50,6 +70,11 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * if the configuration is sufficient the model is being request to
+		 * perform a configuration test. Otherwise, the status indicator is
+		 * being updated with the status "incomplete"
+		 */
 		functionalityCheck: function() {
 			// this method should be called only if necessary, because it may
 			// cause an LDAP request!
@@ -67,6 +92,12 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * will request a functionality check if one of the related configuration
+		 * settings was changed.
+		 *
+		 * @param {ConfigSetPayload} [changeSet]
+		 */
 		considerFunctionalityCheck: function(changeSet) {
 			var testTriggers = [
 				'ldap_host', 'ldap_port', 'ldap_dn', 'ldap_agent_password',
@@ -80,6 +111,13 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * keeps number of running save processes and shows a spinner if
+		 * necessary
+		 *
+		 * @param {WizardView} [view]
+		 * @listens ConfigModel#setRequested
+		 */
 		onSetRequested: function(view) {
 			view.saveProcesses += 1;
 			if(view.saveProcesses === 1) {
@@ -87,6 +125,14 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * keeps number of running save processes and hides the spinner if
+		 * necessary. Also triggers checks, to adjust tabs state and status bar.
+		 *
+		 * @param {WizardView} [view]
+		 * @param {ConfigSetPayload} [result]
+		 * @listens ConfigModel#setCompleted
+		 */
 		onSetRequestDone: function(view, result) {
 			if(view.saveProcesses > 0) {
 				view.saveProcesses -= 1;
@@ -101,6 +147,13 @@ OCA = OCA || {};
 			view.considerFunctionalityCheck(param);
 		},
 
+		/**
+		 * updates the status indicator based on the configuration test result
+		 *
+		 * @param {WizardView} [view]
+		 * @param {ConfigTestPayload} [result]
+		 * @listens ConfigModel#configurationTested
+		 */
 		onTestCompleted: function(view, result) {
 			if(result.isSuccess) {
 				view._updateStatusIndicator(view.STATUS_SUCCESS);
@@ -109,17 +162,38 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * triggers initial checks upon configuration loading to update status
+		 * controls
+		 *
+		 * @param {WizardView} [view]
+		 * @listens ConfigModel#configLoaded
+		 */
 		onConfigLoaded: function(view) {
 			view.basicStatusCheck(view);
 			view.functionalityCheck();
 		},
 
+		/**
+		 * triggers checks upon configuration updates to keep status controls
+		 * up to date
+		 *
+		 * @param {WizardView} [view]
+		 * @param {object} [changeSet]
+		 * @listens ConfigModel#configUpdated
+		 */
 		onConfigUpdated: function(view, changeSet) {
 			view.basicStatusCheck(view);
 			view.considerFunctionalityCheck(changeSet);
 		},
 
+		/**
+		 * sets the model instance and registers event listeners
+		 *
+		 * @param {OCA.LDAP.Wizard.ConfigModel} [configModel]
+		 */
 		setModel: function(configModel) {
+			/** @type {OCA.LDAP.Wizard.ConfigModel} */
 			this.configModel = configModel;
 			for(var i in this.tabs) {
 				this.tabs[i].setModel(configModel);
@@ -136,6 +210,9 @@ OCA = OCA || {};
 			this.configModel.on('configurationTested', this.onTestCompleted, this);
 		},
 
+		/**
+		 * enables tab and navigation buttons
+		 */
 		enableTabs: function() {
 			//do not use this function directly, use basicStatusCheck instead.
 			// TODO check for running save processes
@@ -144,26 +221,45 @@ OCA = OCA || {};
 			this.$settings.tabs('option', 'disabled', []);
 		},
 
+		/**
+		 * disables tab and navigation buttons
+		 */
 		disableTabs: function() {
 			$('.ldap_action_continue').attr('disabled', 'disabled');
 			$('.ldap_action_back').attr('disabled', 'disabled');
 			this.$settings.tabs('option', 'disabled', [1, 2, 3, 4, 5]);
 		},
 
+		/**
+		 * shows a save spinner
+		 */
 		showSaveSpinner: function() {
 			this.$saveSpinners.removeClass('hidden');
 			$('#ldap *').addClass('save-cursor');
 		},
 
+		/**
+		 * hides the save spinner
+		 */
 		hideSaveSpinner: function() {
 			this.$saveSpinners.addClass('hidden');
 			$('#ldap *').removeClass('save-cursor');
 		},
 
+		/**
+		 * performs a config load request to the model
+		 *
+		 * @param {string} [configID]
+		 * @private
+		 */
 		_requestConfig: function(configID) {
 			this.configModel.load(configID);
 		},
 
+		/**
+		 * bootstraps the visual appearance and event listeners, as well as the
+		 * first config
+		 */
 		render: function () {
 			$('#ldapAdvancedAccordion').accordion({ heightStyle: 'content', animate: 'easeInOutCirc'});
 			this.$settings.tabs({});
@@ -177,6 +273,12 @@ OCA = OCA || {};
 			this._requestConfig(this.tabs.server.getConfigID());
 		},
 
+		/**
+		 * updates the status indicator / bar
+		 *
+		 * @param {number} [state]
+		 * @private
+		 */
 		_updateStatusIndicator: function(state) {
 			var $indicator = $('.ldap_config_state_indicator');
 			var $indicatorLight = $('.ldap_config_state_indicator_sign');
@@ -207,6 +309,12 @@ OCA = OCA || {};
 			}
 		},
 
+		/**
+		 * handles a click on the Back button
+		 *
+		 * @param {WizardView} [view]
+		 * @private
+		 */
 		_controlBack: function(view) {
 			var curTabIndex = view.$settings.tabs('option', 'active');
 			if(curTabIndex == 0) {
@@ -216,6 +324,12 @@ OCA = OCA || {};
 			view._controlUpdate(curTabIndex - 1);
 		},
 
+		/**
+		 * handles a click on the Continue button
+		 *
+		 * @param {WizardView} [view]
+		 * @private
+		 */
 		_controlContinue: function(view) {
 			var curTabIndex = view.$settings.tabs('option', 'active');
 			if(curTabIndex == 3) {
@@ -225,6 +339,12 @@ OCA = OCA || {};
 			view._controlUpdate(curTabIndex + 1);
 		},
 
+		/**
+		 * updates the controls (navigation buttons)
+		 *
+		 * @param {number} [nextTabIndex] - index of the tab being switched to
+		 * @private
+		 */
 		_controlUpdate: function(nextTabIndex) {
 			if(nextTabIndex == 0) {
 				$('.ldap_action_back').addClass('invisible');
