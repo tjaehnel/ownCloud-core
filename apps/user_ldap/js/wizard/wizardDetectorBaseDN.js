@@ -9,7 +9,14 @@ OCA = OCA || {};
 
 (function() {
 
+	/**
+	 * @classdesc a Base DN Detector. It executes the auto-detection of the base
+	 * DN by the ownCloud server, if requirements are met.
+	 *
+	 * @constructor
+	 */
 	var WizardDetectorBaseDN = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+		/** @inheritdoc */
 		init: function() {
 			this.setTrigger([
 				'ldap_host',
@@ -21,6 +28,7 @@ OCA = OCA || {};
 			this.setTargetKey('ldap_dn');
 		},
 
+		/** @inheritdoc */
 		overrideErrorMessage: function(message) {
 			if(   message === 'Server is unwilling to perform'
 			   || message === 'Could not connect to LDAP'
@@ -30,6 +38,15 @@ OCA = OCA || {};
 			return t('user_ldap', 'Please specify a Base DN, it could not be auto-detected.');
 		},
 
+		/**
+		 * runs the detector, if specified configuration settings are set and
+		 * base DN is not set.
+		 *
+		 * @param {OCA.LDAP.Wizard.ConfigModel} model
+		 * @param {string} configID - the configuration prefix
+		 * @returns {boolean|jqXHR}
+		 * @abstract
+		 */
 		run: function(model, configID) {
 			if(    !model.configuration['ldap_host']
 				|| !model.configuration['ldap_port']

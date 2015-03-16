@@ -9,7 +9,14 @@ OCA = OCA || {};
 
 (function() {
 
+	/**
+	 * @classdesc a Port Detector. It executes the auto-detection of the port
+	 * by the ownCloud server, if requirements are met.
+	 *
+	 * @constructor
+	 */
 	var WizardDetectorPort = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+		/** @inheritdoc */
 		init: function() {
 			this.setTrigger([
 				'ldap_host',
@@ -20,6 +27,7 @@ OCA = OCA || {};
 			this.setTargetKey('ldap_port');
 		},
 
+		/** @inheritdoc */
 		overrideErrorMessage: function(message) {
 			if(message === 'Invalid credentials') {
 				return t('user_ldap', 'Please check the credentials, they seem to be wrong.');
@@ -27,6 +35,14 @@ OCA = OCA || {};
 			return t('user_ldap', 'Please specify the port, it could not be auto-detected.');
 		},
 
+		/**
+		 * runs the detector, if port is not set.
+		 *
+		 * @param {OCA.LDAP.Wizard.ConfigModel} model
+		 * @param {string} configID - the configuration prefix
+		 * @returns {boolean|jqXHR}
+		 * @abstract
+		 */
 		run: function(model, configID) {
 			if(model.configuration['ldap_port']) {
 				// don't attempt to overwrite a configured port

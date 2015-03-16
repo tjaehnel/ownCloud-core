@@ -11,6 +11,12 @@ OCA = OCA || {};
 	var initializing = false;
 	var superPattern = /xyz/.test(function() { xyz; }) ? /\b_super\b/ : /.*/;
 
+	/**
+	 * @classdesc a base class that allows inheritance
+	 *
+	 * @abstrcact
+	 * @constructor
+	 */
 	var WizardObject = function(){};
 	WizardObject.subClass = function(properties) {
 		var _super = this.prototype;

@@ -4,6 +4,9 @@
  * See the COPYING-README file.
  */
 
+/**
+ * initializes the wizard and related components and kicks it off.
+ */
 $(document).ready(function() {
 	var detectorQueue = new OCA.LDAP.Wizard.WizardDetectorQueue();
 	detectorQueue.init();
