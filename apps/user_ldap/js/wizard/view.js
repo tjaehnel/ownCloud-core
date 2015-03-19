@@ -53,6 +53,24 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * registers a tab
+		 *
+		 * @param {OCA.LDAP.Wizard.WizardTabGeneric} tabView
+		 * @param {string} index
+		 * @returns {boolean}
+		 */
+		registerTab: function(tabView, index) {
+			if( _.isUndefined(this.tabs[index])
+				&& tabView instanceof OCA.LDAP.Wizard.WizardTabGeneric
+			) {
+				this.tabs[index] = tabView;
+				this.tabs[index].setModel(this.configModel);
+				return true;
+			}
+			return false;
+		},
+
+		/**
 		 * checks certain config values for completeness and depending on them
 		 * enables or disables non-elementary tabs.
 		 */

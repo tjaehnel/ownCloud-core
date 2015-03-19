@@ -22,6 +22,11 @@ OCA = OCA || {};
 	var ConfigModel = function() {};
 
 	ConfigModel.prototype = {
+		/** @constant {number} */
+		FILTER_MODE_ASSISTED: 0,
+		/** @constant {number} */
+		FILTER_MODE_RAW: 1,
+
 		/**
 		 * initializes the instance. Always call it after creating the instance.
 		 */
@@ -144,9 +149,12 @@ OCA = OCA || {};
 		 */
 		set: function(key, value) {
 			if(_.isUndefined(this.configuration[key])) {
+				console.log('will not save undefined key');
+				console.log(this.configuration);
 				return false;
 			}
 			if(this.configuration[key] === value) {
+				console.log('value did not change, will not save');
 				return false;
 			}
 			this._broadcast('setRequested', {});

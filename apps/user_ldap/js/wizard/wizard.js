@@ -27,10 +27,12 @@ $(document).ready(function() {
 	model.registerDetector(portDetector);
 	model.registerDetector(baseDNDetector);
 
+	var userFilterTab = new OCA.LDAP.Wizard.WizardTabUserFilter();
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();
 	view.setModel(model);
+	view.registerTab(userFilterTab, 'userFilter');
 
 	var controller = new OCA.LDAP.Wizard.Controller();
 	controller.init();
