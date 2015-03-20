@@ -19,7 +19,7 @@ OCA = OCA || {};
 			this.tabIndex = tabIndex;
 			this.tabID = tabID;
 			this.spinner = $('.ldapSpinner').first().clone().removeClass('hidden');
-			_.bindAll(this, '_toggleRawFilterMode');
+			_.bindAll(this, '_toggleRawFilterMode', '_toggleRawFilterModeConfirmation');
 		},
 
 		/**
@@ -117,6 +117,15 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * whether the wizard works in experienced admin mode
+		 *
+		 * @returns {boolean}
+		 */
+		isExperiencedMode: function() {
+			return parseInt(this.configModel.configuration.ldap_experienced_admin, 10) === 1;
+		},
+
+		/**
 		 * sets up auto-save functionality to the managed items
 		 *
 		 * @private
@@ -206,9 +215,11 @@ OCA = OCA || {};
 		 */
 		setFilterMode: function(mode) {
 			if(parseInt(mode, 10) === this.configModel.FILTER_MODE_ASSISTED) {
+				this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 				this._setFilterModeAssisted();
 			} else {
 				this._setFilterModeRaw();
+				this.parsedFilterMode = this.configModel.FILTER_MODE_RAW;
 			}
 		},
 
@@ -255,30 +266,67 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * @callback toggleConfirmCallback
+		 * @param {boolean} isConfirmed
+		 */
+
+		/**
+		 * shows a confirmation dialogue before switching from raw to assisted
+		 * mode if experienced mode is enabled.
+		 *
+		 * @param {toggleConfirmCallback} toggleFnc
+		 * @private
+		 */
+		_toggleRawFilterModeConfirmation: function(toggleFnc) {
+			if( !this.isExperiencedMode()
+				|| this.parsedFilterMode === this.configModel.FILTER_MODE_ASSISTED
+			) {
+				toggleFnc(true);
+			} else {
+				OCdialogs.confirm(
+					t('user_ldap', 'Switching the mode will enable automatic LDAP queries. Depending on your LDAP size they may take a while. Do you still want to switch the mode?'),
+					t('user_ldap', 'Mode switch'),
+					toggleFnc
+				);
+			}
+		},
+
+		/**
 		 * toggles the visibility of a raw filter container and so also the
 		 * state of the multi-select controls. The model is requested to save
 		 * the state.
 		 */
 		_toggleRawFilterMode: function() {
-			/** var {number} */
-			var mode;
 			var view = this;
-			if(this.$filterModeRawContainer.hasClass('invisible')) {
-				this._setFilterModeRaw();
-				mode = this.configModel.FILTER_MODE_RAW;
-			} else {
-				this._setFilterModeAssisted();
-				mode = this.configModel.FILTER_MODE_ASSISTED;
-			}
-			var key = this.filterModeKey;
-			/** @var {viewSaveInfo} */
-			var saveInfo = {
-				val:  function() { return mode;  },
-				attr: function() { return key;   },
-				is:   function() { return false; }
-			};
-			this._requestSave(saveInfo);
-			//TODO: use ldapFilter.setMode()
+			this._toggleRawFilterModeConfirmation(function(isConfirmed) {
+				if(!isConfirmed) {
+					return;
+				}
+				/** var {number} */
+				var mode;
+				if (view.$filterModeRawContainer.hasClass('invisible')) {
+					view._setFilterModeRaw();
+					mode = view.configModel.FILTER_MODE_RAW;
+				} else {
+					view._setFilterModeAssisted();
+					mode = view.configModel.FILTER_MODE_ASSISTED;
+				}
+				var key = view.filterModeKey;
+				/** @var {viewSaveInfo} */
+				var saveInfo = {
+					val: function () {
+						return mode;
+					},
+					attr: function () {
+						return key;
+					},
+					is: function () {
+						return false;
+					}
+				};
+				view._requestSave(saveInfo);
+				//TODO: use ldapFilter.setMode()
+			});
 		},
 
 		/**
@@ -308,6 +356,7 @@ OCA = OCA || {};
 			filterModeKey,
 			filterModeStateElement
 		) {
+			this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 			this.$filterModeRawContainer = $filterModeRawContainer;
 			this.filterModeDisableableElements = filterModeDisableableElements;
 			this.filterModeStateElement = filterModeStateElement;
