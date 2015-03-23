@@ -299,6 +299,9 @@ class Storage {
 			if( @$users_view->rename('files_versions'.$filename.'.v'.$revision, 'files'.$filename) ) {
 				$files_view->touch($file, $revision);
 				Storage::scheduleExpire($file);
+				\OC_Hook::emit('\OCP\Versions', 'rollback', array(
+					'path' => $filename,
+				));
 				return true;
 
 			}else if ( $versionCreated ) {
