@@ -141,9 +141,12 @@ OCA = OCA || {};
 			var view = this;
 
 			for(var id in this.managedItems) {
-				$('#' + id).change(function() {
-					view._requestSave($(this));
-				});
+				var $element = $('#' + id);
+				if (!$element.is('select[multiple]')) {
+					$element.change(function() {
+						view._requestSave($(this));
+					});
+				}
 			}
 		},
 
@@ -160,8 +163,7 @@ OCA = OCA || {};
 				header: false,
 				selectedList: 9,
 				noneSelectedText: caption,
-				click: function() {
-					// FIXME: let's do it after close instead
+				close: function() {
 					view._requestSave($element);
 				}
 			});
