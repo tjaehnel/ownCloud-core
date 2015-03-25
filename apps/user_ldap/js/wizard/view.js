@@ -34,6 +34,7 @@ OCA = OCA || {};
 			this.$settings = $('#ldapSettings');
 			this.$saveSpinners = $('#ldap .ldap_saving');
 			this.saveProcesses = 0;
+			_.bindAll(this, 'onTabChange');
 		},
 
 		/**
@@ -193,6 +194,24 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * reacts on attempts to switch to a different tab
+		 *
+		 * @param {object} event
+		 * @param {object} ui
+		 * @returns {boolean}
+		 */
+		onTabChange: function(event, ui) {
+			if(this.saveProcesses > 0) {
+				return false;
+			}
+
+			var newTabID = ui.newTab[0].id;
+			if(!_.isUndefined(this.tabs[newTabID])) {
+				this.tabs[newTabID].onActivate();
+			}
+		},
+
+		/**
 		 * triggers checks upon configuration updates to keep status controls
 		 * up to date
 		 *
@@ -284,6 +303,7 @@ OCA = OCA || {};
 			$('.ldap_submit').button();
 			$('.ldap_action_test_connection').button();
 			$('#ldap_action_delete_configuration').button();
+			$('#ldapSettings').tabs({ beforeActivate: this.onTabChange });
 
 			this.initControls();
 			this.disableTabs();

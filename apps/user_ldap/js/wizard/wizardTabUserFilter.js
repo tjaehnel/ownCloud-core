@@ -22,8 +22,8 @@ OCA = OCA || {};
 		init: function (tabIndex, tabID) {
 			this._super(tabIndex, tabID);
 			this.setManagedItems({
-/*				ldap_userfilter_objectclass: 'setObjectClass',
-				ldap_userfilter_groups: 'setGroups',
+				ldap_userfilter_objectclass: 'setObjectClass',
+				/*ldap_userfilter_groups: 'setGroups',
 				ldap_userlist_filter: 'setFilter',
 				ldap_user_count: 'setUserCount',*/
 				ldap_user_filter_mode: 'setFilterMode'
@@ -62,6 +62,28 @@ OCA = OCA || {};
 			this._super(configModel);
 			this.configModel.on('configLoaded', this.onConfigLoaded, this);
 			this.configModel.on('configUpdated', this.onConfigLoaded, this);
+			this.configModel.on('receivedLdapFeature', this.onFeatureReceived, this);
+		},
+
+		/**
+		 * sets the selected user object classes
+		 *
+		 * @param {Array} classes
+		 */
+		setObjectClass: function(classes) {
+			this.setElementValue(this.jqObjects.userFilterObjectClasses, classes);
+			this.jqObjects.userFilterObjectClasses.multiselect('refresh');
+		},
+
+		/**
+		 * populate objectClasses, when…
+		 * - this tab is being activated
+		 * - AND they are not populated yet
+		 */
+		onActivate: function() {
+			if(this.jqObjects.userFilterObjectClasses.find('option').length === 0) {
+				this.configModel.requestWizard('ldap_userfilter_objectclass');
+			}
 		},
 
 		/**
@@ -100,6 +122,26 @@ OCA = OCA || {};
 					console.log(result.errorMessage);
 					// TODO show notification (if we are active tab?)
 				}
+			}
+		},
+
+		/**
+		 * if UserObjectClasses are found, the corresponding element will be
+		 * updated
+		 *
+		 * @param {WizardTabElementary} view
+		 * @param {FeaturePayload} payload
+		 */
+		onFeatureReceived: function(view, payload) {
+			if(payload.feature === 'UserObjectClasses') {
+				view.jqObjects.userFilterObjectClasses.find('option').remove();
+				for (var i in payload.data) {
+					//FIXME: move HTML into template
+					var name = payload.data[i];
+					var entry = "<option value='" + name + "'>" + name + "</option>";
+					view.jqObjects.userFilterObjectClasses.append(entry);
+				}
+				view.jqObjects.userFilterObjectClasses.multiselect('refresh');
 			}
 		}
 	});

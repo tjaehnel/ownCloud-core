@@ -204,6 +204,22 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * @typedef {object} FeaturePayload
+		 * @property {string} feature
+		 * @property {Array} data
+		 */
+
+		/**
+		 * informs about a detected LDAP "feature" (wider sense). For examples,
+		 * the detected object classes for users or groups
+		 *
+		 * @param {FeaturePayload} payload
+		 */
+		inform: function(payload) {
+			this._broadcast('receivedLdapFeature', payload);
+		},
+
+		/**
 		 * detectionStarted Event
 		 *
 		 * @event ConfigModel#detectionStarted
@@ -287,6 +303,20 @@ OCA = OCA || {};
 			var model = this;
 			$.post(url, params, function(result) { model._processTestResult(model, result) });
 			//TODO: make sure only one test is running at a time
+		},
+
+		requestWizard: function(featureKey) {
+			var model = this;
+			var detectorCount = this.detectors.length;
+			for(var i = 0; i < detectorCount; i++) {
+				if(this.detectors[i].runsOnFeatureRequest(featureKey)) {
+					(function (detector) {
+						model.detectorQueue.add(function() {
+							return detector.run(model, model.configID);
+						});
+					})(model.detectors[i]);
+				}
+			}
 		},
 
 		/**

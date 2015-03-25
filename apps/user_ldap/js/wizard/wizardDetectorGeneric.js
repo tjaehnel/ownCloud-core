@@ -22,6 +22,7 @@ OCA = OCA || {};
 		init: function() {
 			this.setTrigger([]);
 			this.targetKey = '';
+			this.runsOnRequest = false;
 		},
 
 		/**
@@ -41,6 +42,16 @@ OCA = OCA || {};
 		 */
 		triggersOn: function(key) {
 			return ($.inArray(key, this.triggers) >= 0);
+		},
+
+		/**
+		 * whether the detector runs on explicit request
+		 *
+		 * @param {string} key
+		 * @returns {boolean}
+		 */
+		runsOnFeatureRequest: function(key) {
+			return !!(this.runsOnRequest && this.targetKey === key);
 		},
 
 		/**

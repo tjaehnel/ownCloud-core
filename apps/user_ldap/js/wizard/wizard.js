@@ -12,10 +12,10 @@ $(document).ready(function() {
 	detectorQueue.init();
 
 	var portDetector = new OCA.LDAP.Wizard.WizardDetectorPort();
-	portDetector.init();
 
 	var baseDNDetector = new OCA.LDAP.Wizard.WizardDetectorBaseDN();
-	baseDNDetector.init();
+
+	var userObjectClassDetector = new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses();
 
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();
@@ -26,13 +26,14 @@ $(document).ready(function() {
 	// all necessary information. Only after Port Detector was executed…
 	model.registerDetector(portDetector);
 	model.registerDetector(baseDNDetector);
+	model.registerDetector(userObjectClassDetector);
 
 	var userFilterTab = new OCA.LDAP.Wizard.WizardTabUserFilter();
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();
 	view.setModel(model);
-	view.registerTab(userFilterTab, 'userFilter');
+	view.registerTab(userFilterTab, '#ldapWizard2');
 
 	var controller = new OCA.LDAP.Wizard.Controller();
 	controller.init();

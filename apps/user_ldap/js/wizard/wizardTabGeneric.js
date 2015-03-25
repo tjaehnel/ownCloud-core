@@ -43,7 +43,14 @@ OCA = OCA || {};
 		 */
 		setModel: function(configModel) {
 			this.configModel = configModel;
+			this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 		},
+
+		/**
+		 * this is called by the main view, if the tab is being switched to.
+		 * The concrete tab view can implement this if necessary.
+		 */
+		onActivate: function() { },
 
 		/**
 		 * sets the value to an HTML element. Checkboxes, text areas and (text)
@@ -356,7 +363,6 @@ OCA = OCA || {};
 			filterModeKey,
 			filterModeStateElement
 		) {
-			this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 			this.$filterModeRawContainer = $filterModeRawContainer;
 			this.filterModeDisableableElements = filterModeDisableableElements;
 			this.filterModeStateElement = filterModeStateElement;
