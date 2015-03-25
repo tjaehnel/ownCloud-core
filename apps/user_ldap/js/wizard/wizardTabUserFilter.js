@@ -21,34 +21,48 @@ OCA = OCA || {};
 		 */
 		init: function (tabIndex, tabID) {
 			this._super(tabIndex, tabID);
-			this.setManagedItems({
-				ldap_userfilter_objectclass: 'setObjectClass',
-				/*ldap_userfilter_groups: 'setGroups',
-				ldap_userlist_filter: 'setFilter',
-				ldap_user_count: 'setUserCount',*/
-				ldap_user_filter_mode: 'setFilterMode'
-			});
-			this.jqObjects = {
-				userFilterGroups: $('#ldap_userfilter_groups'),
-				userFilterObjectClasses: $('#ldap_userfilter_objectclass'),
-				userFilterRawToggle: $('#toggleRawUserFilter'),
-				userFilterRawContainer: $('#rawUserFilterContainer')
+
+			var items = {
+				ldap_userfilter_objectclass: {
+					$element: $('#ldap_userfilter_objectclass'),
+					setMethod: 'setObjectClass'
+				},
+				ldap_user_filter_mode: {
+					setMethod: 'setFilterMode'
+				},
+				userFilterGroups: {
+					$element: $('#ldap_userfilter_groups')
+				},
+				userFilterRawToggle: {
+					$element: $('#toggleRawUserFilter')
+				},
+				userFilterRawContainer: {
+					$element: $('#rawUserFilterContainer')
+				}
 			};
+			/*ldap_userfilter_groups: 'setGroups',
+			 ldap_userlist_filter: 'setFilter',
+			 ldap_user_count: 'setUserCount',*/
+			this.setManagedItems(items);
+
 			this.filterModeKey = 'ldapUserFilterMode';
 			this._initMultiSelect(
-				this.jqObjects.userFilterGroups,
+				this.managedItems.userFilterGroups.$element,
 				t('user_ldap', 'Select groups')
 			);
 			this._initMultiSelect(
-				this.jqObjects.userFilterObjectClasses,
+				this.managedItems.ldap_userfilter_objectclass.$element,
 				t('user_ldap', 'Select object classes')
 			);
 			this._initFilterModeSwitcher(
-				this.jqObjects.userFilterRawToggle,
-				this.jqObjects.userFilterRawContainer,
-				[ this.jqObjects.userFilterObjectClasses ],
+				this.managedItems.userFilterRawToggle.$element,
+				this.managedItems.userFilterRawContainer.$element,
+				[ this.managedItems.ldap_userfilter_objectclass.$element ],
 				'ldap_user_filter_mode',
-				{ status: 'disabled', $element: this.jqObjects.userFilterGroups }
+				{
+					status: 'disabled',
+					$element: this.managedItems.userFilterGroups.$element
+				}
 			);
 		},
 
@@ -71,8 +85,8 @@ OCA = OCA || {};
 		 * @param {Array} classes
 		 */
 		setObjectClass: function(classes) {
-			this.setElementValue(this.jqObjects.userFilterObjectClasses, classes);
-			this.jqObjects.userFilterObjectClasses.multiselect('refresh');
+			this.setElementValue(this.managedItems.ldap_userfilter_objectclass.$element, classes);
+			this.managedItems.ldap_userfilter_objectclass.$element.multiselect('refresh');
 		},
 
 		/**
@@ -81,7 +95,7 @@ OCA = OCA || {};
 		 * - AND they are not populated yet
 		 */
 		onActivate: function() {
-			if(this.jqObjects.userFilterObjectClasses.find('option').length === 0) {
+			if(this.managedItems.ldap_userfilter_objectclass.$element.find('option').length === 0) {
 				this.configModel.requestWizard('ldap_userfilter_objectclass');
 			}
 		},
@@ -90,7 +104,7 @@ OCA = OCA || {};
 		 * updates the tab when the model loaded a configuration and notified
 		 * this view.
 		 *
-		 * @param {WizardTabElementary} view - this instance
+		 * @param {WizardTabUserFilter} view - this instance
 		 * @param {Object} configuration
 		 *
 		 * TODO: move to Generic?!
@@ -99,7 +113,7 @@ OCA = OCA || {};
 			for(var key in view.managedItems){
 				if(!_.isUndefined(configuration[key])) {
 					var value = configuration[key];
-					var methodName = view.managedItems[key];
+					var methodName = view.managedItems[key].setMethod;
 					view[methodName](value);
 				}
 			}
@@ -116,7 +130,7 @@ OCA = OCA || {};
 		 */
 		onItemSaved: function(view, result) {
 			if(!_.isUndefined(view.managedItems[result.key])) {
-				var methodName = view.managedItems[result.key];
+				var methodName = view.managedItems[result.key].setMethod;
 				view[methodName](result.value);
 				if(!result.isSuccess) {
 					console.log(result.errorMessage);
@@ -129,19 +143,19 @@ OCA = OCA || {};
 		 * if UserObjectClasses are found, the corresponding element will be
 		 * updated
 		 *
-		 * @param {WizardTabElementary} view
+		 * @param {WizardTabUserFilter} view
 		 * @param {FeaturePayload} payload
 		 */
 		onFeatureReceived: function(view, payload) {
 			if(payload.feature === 'UserObjectClasses') {
-				view.jqObjects.userFilterObjectClasses.find('option').remove();
+				view.managedItems.ldap_userfilter_objectclass.$element.find('option').remove();
 				for (var i in payload.data) {
 					//FIXME: move HTML into template
 					var name = payload.data[i];
 					var entry = "<option value='" + name + "'>" + name + "</option>";
-					view.jqObjects.userFilterObjectClasses.append(entry);
+					view.managedItems.ldap_userfilter_objectclass.$element.append(entry);
 				}
-				view.jqObjects.userFilterObjectClasses.multiselect('refresh');
+				view.managedItems.ldap_userfilter_objectclass.$element.multiselect('refresh');
 			}
 		}
 	});

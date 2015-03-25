@@ -355,6 +355,9 @@ OCA = OCA || {};
 			var subscribers = this.subscribers[name];
 			var subscriberCount = subscribers.length;
 			for(var i = 0; i < subscriberCount; i++) {
+				console.trace();
+				console.log(subscribers[i]);
+				console.log(params);
 				subscribers[i]['fn'](subscribers[i]['context'], params);
 			}
 		},

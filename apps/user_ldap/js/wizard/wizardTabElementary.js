@@ -23,22 +23,34 @@ OCA = OCA || {};
 		init: function (tabIndex, tabID) {
 			this._super(tabIndex, tabID);
 			this.configChooserID = '#ldap_serverconfig_chooser';
-			this.setManagedItems({
-				'ldap_host': 'setHost',
-				'ldap_port': 'setPort',
-				'ldap_dn': 'setAgentDN',
-				'ldap_agent_password': 'setAgentPwd',
-				'ldap_base': 'setBase',
-				'ldap_experienced_admin': 'setExperiencedAdmin'
-			});
-			this.jqObjects = {
-				host: $('#ldap_host'),
-				port: $('#ldap_port'),
-				agent: $('#ldap_dn'),
-				agentPassword: $('#ldap_agent_password'),
-				base: $('#ldap_base'),
-				xpAdmin: $('#ldap_experienced_admin')
+
+			var items = {
+				'ldap_host': {
+					$element: $('#ldap_host'),
+					setMethod: 'setHost'
+				},
+				'ldap_port': {
+					$element: $('#ldap_port'),
+					setMethod: 'setPort'
+				},
+				'ldap_dn': {
+					$element: $('#ldap_dn'),
+					setMethod: 'setAgentDN'
+				},
+				'ldap_agent_password': {
+					$element: $('#ldap_agent_password'),
+					setMethod: 'setAgentPwd'
+				},
+				'ldap_base': {
+					$element: $('#ldap_base'),
+					setMethod: 'setBase'
+				},
+				'ldap_experienced_admin': {
+					$element: $('#ldap_experienced_admin'),
+					setMethod: 'setExperiencedAdmin'
+				}
 			};
+			this.setManagedItems(items);
 		},
 
 		/**
@@ -54,8 +66,6 @@ OCA = OCA || {};
 			this.configModel.on('setCompleted', this.onItemSaved, this);
 			this.configModel.on('newConfiguration', this.onNewConfiguration, this);
 			this.configModel.on('deleteConfiguration', this.onDeleteConfiguration, this);
-			this.configModel.on('detectionStarted', this.onDetectionStarted, this);
-			this.configModel.on('detectionCompleted', this.onDetectionCompleted, this);
 			this._enableConfigChooser();
 			this._enableConfigButtons();
 		},
@@ -75,7 +85,7 @@ OCA = OCA || {};
 		 * @param {string} host
 		 */
 		setHost: function(host) {
-			this.setElementValue(this.jqObjects.host, host);
+			this.setElementValue(this.managedItems.ldap_host.$element, host);
 		},
 
 		/**
@@ -84,7 +94,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getHost: function() {
-			return this.jqObjects.host.val();
+			return this.managedItems.ldap_host.$element.val();
 		},
 
 		/**
@@ -93,7 +103,7 @@ OCA = OCA || {};
 		 * @param {string} port
 		 */
 		setPort: function(port) {
-			this.setElementValue(this.jqObjects.port, port);
+			this.setElementValue(this.managedItems.ldap_port.$element, port);
 		},
 
 		/**
@@ -102,23 +112,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getPort: function() {
-			return this.jqObjects.port.val();
-		},
-
-		/**
-		 * enables the port input field
-		 */
-		enablePort: function() {
-			this.enableElement(this.jqObjects.port);
-			this.removeSpinner('#ldap_port');
-		},
-
-		/**
-		 * disables the port input field
-		 */
-		disablePort: function() {
-			this.disableElement(this.jqObjects.port);
-			this.attachSpinner('#ldap_port');
+			return this.managedItems.ldap_port.$element.val();
 		},
 
 		/**
@@ -127,7 +121,7 @@ OCA = OCA || {};
 		 * @param {string} agentDN
 		 */
 		setAgentDN: function(agentDN) {
-			this.setElementValue(this.jqObjects.agent, agentDN);
+			this.setElementValue(this.managedItems.ldap_dn.$element, agentDN);
 		},
 
 		/**
@@ -136,7 +130,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getAgentDN: function() {
-			return this.jqObjects.agent.val();
+			return this.managedItems.ldap_dn.$element.val();
 		},
 
 		/**
@@ -145,7 +139,9 @@ OCA = OCA || {};
 		 * @param {string} agentPwd
 		 */
 		setAgentPwd: function(agentPwd) {
-			this.setElementValue(this.jqObjects.agentPassword, agentPwd);
+			this.setElementValue(
+				this.managedItems.ldap_agent_password.$element, agentPwd
+			);
 		},
 
 		/**
@@ -154,7 +150,7 @@ OCA = OCA || {};
 		 * @returns {*|jQuery}
 		 */
 		getAgentPwd: function() {
-			return this.jqObjects.agentPassword.val();
+			return this.managedItems.ldap_agent_password.$element.val();
 		},
 
 		/**
@@ -163,7 +159,7 @@ OCA = OCA || {};
 		 * @param {string} bases
 		 */
 		setBase: function(bases) {
-			this.setElementValue(this.jqObjects.base, bases);
+			this.setElementValue(this.managedItems.ldap_base.$element, bases);
 		},
 
 		/**
@@ -171,25 +167,9 @@ OCA = OCA || {};
 		 * @returns {*|jQuery}
 		 */
 		getBase: function() {
-			return this.jqObjects.base.val();
+			return this.managedItems.ldap_base.$element.val();
 		},
 
-		/**
-		 * enables the base dn field. Also attaches a spinner, because it is
-		 * always caused by a detector.
-		 */
-		enableBase: function() {
-			this.enableElement(this.jqObjects.base);
-			this.removeSpinner('#ldap_base');
-		},
-
-		/**
-		 * disables the base dn field. Also removes a possible spinner.
-		 */
-		disableBase: function() {
-			this.disableElement(this.jqObjects.base);
-			this.attachSpinner('#ldap_base');
-		},
 
 		/**
 		 * updates the experienced admin check box
@@ -197,7 +177,9 @@ OCA = OCA || {};
 		 * @param {string} xpAdminMode contains an int
 		 */
 		setExperiencedAdmin: function(xpAdminMode) {
-			this.setElementValue(this.jqObjects.xpAdmin, xpAdminMode);
+			this.setElementValue(
+				this.managedItems.ldap_experienced_admin.$element, xpAdminMode
+			);
 		},
 
 		/**
@@ -213,7 +195,7 @@ OCA = OCA || {};
 			for(var key in view.managedItems){
 				if(!_.isUndefined(configuration[key])) {
 					var value = configuration[key];
-					var methodName = view.managedItems[key];
+					var methodName = view.managedItems[key].setMethod;
 					view[methodName](value);
 				}
 			}
@@ -228,11 +210,10 @@ OCA = OCA || {};
 		 */
 		onItemSaved: function(view, result) {
 			if(!_.isUndefined(view.managedItems[result.key])) {
-				var methodName = view.managedItems[result.key];
+				var methodName = view.managedItems[result.key].setMethod;
 				view[methodName](result.value);
 				if(!result.isSuccess) {
 					console.log(result.errorMessage);
-					// TODO show notification (if we are active tab?)
 				}
 			}
 		},
@@ -279,34 +260,6 @@ OCA = OCA || {};
 				}
 			} else {
 				OC.Notification.showTemporary(result.errorMessage);
-			}
-		},
-
-		/**
-		 * disables affected, managed fields if a detector is running against them
-		 *
-		 * @param {WizardTabElementary} view
-		 * @param {string} key
-		 */
-		onDetectionStarted: function(view, key) {
-			if(key === 'ldap_port') {
-				view.disablePort();
-			} else if(key === 'ldap_dn') {
-				view.disableBase();
-			}
-		},
-
-		/**
-		 * enables affected, managed fields after a detector was run against them
-		 *
-		 * @param {WizardTabElementary} view
-		 * @param {string} key
-		 */
-		onDetectionCompleted: function(view, key) {
-			if(key === 'ldap_port') {
-				view.enablePort();
-			} else if(key === 'ldap_dn') {
-				view.enableBase();
 			}
 		},
 

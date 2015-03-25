@@ -44,6 +44,8 @@ OCA = OCA || {};
 		setModel: function(configModel) {
 			this.configModel = configModel;
 			this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
+			this.configModel.on('detectionStarted', this.onDetectionStarted, this);
+			this.configModel.on('detectionCompleted', this.onDetectionCompleted, this);
 		},
 
 		/**
@@ -51,6 +53,32 @@ OCA = OCA || {};
 		 * The concrete tab view can implement this if necessary.
 		 */
 		onActivate: function() { },
+
+		/**
+		 * disables affected, managed fields if a detector is running against them
+		 *
+		 * @param {WizardTabGeneric} view
+		 * @param {string} key
+		 */
+		onDetectionStarted: function(view, key) {
+			if(!_.isUndefined(view.managedItems[key])) {
+				view.disableElement(view.managedItems[key].$element);
+				view.attachSpinner(view.managedItems[key].$element.attr('id'));
+			}
+		},
+
+		/**
+		 * enables affected, managed fields after a detector was run against them
+		 *
+		 * @param {WizardTabGeneric} view
+		 * @param {string} key
+		 */
+		onDetectionCompleted: function(view, key) {
+			if(!_.isUndefined(view.managedItems[key])) {
+				view.enableElement(view.managedItems[key].$element);
+				view.removeSpinner(view.managedItems[key].$element.attr('id'));
+			}
+		},
 
 		/**
 		 * sets the value to an HTML element. Checkboxes, text areas and (text)
@@ -106,10 +134,14 @@ OCA = OCA || {};
 		 * @param {string} elementID
 		 */
 		attachSpinner: function(elementID) {
-			if($(elementID + ' + .ldapSpinner').length == 0) {
+			if($('#' + elementID + ' + .ldapSpinner').length == 0) {
 				var spinner = this.spinner.clone();
-				$(spinner).insertAfter($(elementID));
-				//$(elementID + " + img + button").css('display', 'none'); ???
+				var $element = $('#' + elementID);
+				$(spinner).insertAfter($element);
+				// and special treatment for multiselects:
+				if ($element.is('select[multiple]')) {
+					$('#' + elementID + " + img + button").css('display', 'none');
+				}
 			}
 		},
 
@@ -119,8 +151,9 @@ OCA = OCA || {};
 		 * @param {string} elementID
 		 */
 		removeSpinner: function(elementID) {
-			$(elementID+' + .ldapSpinner').remove();
-			//$(elementID + " + button").css('display', 'inline'); ???
+			$('#' + elementID+' + .ldapSpinner').remove();
+			// and special treatment for multiselects:
+			$('#' + elementID + " + button").css('display', 'inline');
 		},
 
 		/**
@@ -141,7 +174,10 @@ OCA = OCA || {};
 			var view = this;
 
 			for(var id in this.managedItems) {
-				var $element = $('#' + id);
+				if(_.isUndefined(this.managedItems[id].$element)) {
+					continue;
+				}
+				var $element = this.managedItems[id].$element;
 				if (!$element.is('select[multiple]')) {
 					$element.change(function() {
 						view._requestSave($(this));
