@@ -5,7 +5,7 @@
 		</p>
 		<p>
 			<label for="ldap_userfilter_objectclass">
-				<?php p($l->t('only those object classes:'));?>
+				<?php p($l->t('Only these object classes:'));?>
 			</label>
 
 			<select id="ldap_userfilter_objectclass" multiple="multiple"
@@ -14,7 +14,7 @@
 		</p>
 		<p>
 			<label for="ldap_userfilter_groups">
-				<?php p($l->t('only from those groups:'));?>
+				<?php p($l->t('Only from these groups:'));?>
 			</label>
 
 			<select id="ldap_userfilter_groups" multiple="multiple"
