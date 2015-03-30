@@ -1096,7 +1096,8 @@ class Wizard extends LDAPUtility {
 				//skip when the filter is a wildcard and results were found
 				continue;
 			}
-			$rr = $this->ldap->search($cr, $base, $filter, array($attr));
+			// 20k limit for performance and reason
+			$rr = $this->ldap->search($cr, $base, $filter, array($attr), 0, 20000);
 			if(!$this->ldap->isResource($rr)) {
 				continue;
 			}
