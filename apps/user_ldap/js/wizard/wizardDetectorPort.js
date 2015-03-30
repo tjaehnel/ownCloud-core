@@ -27,14 +27,6 @@ OCA = OCA || {};
 			this.setTargetKey('ldap_port');
 		},
 
-		/** @inheritdoc */
-		overrideErrorMessage: function(message) {
-			if(message === 'Invalid credentials') {
-				return t('user_ldap', 'Please check the credentials, they seem to be wrong.');
-			}
-			return t('user_ldap', 'Please specify the port, it could not be auto-detected.');
-		},
-
 		/**
 		 * runs the detector, if port is not set.
 		 *

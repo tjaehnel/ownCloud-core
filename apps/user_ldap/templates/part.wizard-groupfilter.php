@@ -27,7 +27,7 @@
 		<p id="rawGroupFilterContainer" class="invisible">
 			<input type="text" id="ldap_group_filter" name="ldap_group_filter"
 			class="lwautosave"
-			placeholder="<?php p($l->t('Raw LDAP filter'));?>"
+			placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 			title="<?php p($l->t('The filter specifies which LDAP groups shall have access to the %s instance.', $theme->getName()));?>"
 			/>
 			<button class="ldapGetEntryCount hidden" name="ldapGetEntryCount" type="button">

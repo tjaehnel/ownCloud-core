@@ -11,11 +11,12 @@ $(document).ready(function() {
 	var detectorQueue = new OCA.LDAP.Wizard.WizardDetectorQueue();
 	detectorQueue.init();
 
-	var portDetector = new OCA.LDAP.Wizard.WizardDetectorPort();
+	var detectors = [];
 
-	var baseDNDetector = new OCA.LDAP.Wizard.WizardDetectorBaseDN();
-
-	var userObjectClassDetector = new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses();
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorPort());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorBaseDN());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupsForUsers());
 
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();
@@ -24,9 +25,9 @@ $(document).ready(function() {
 	// for example, BaseDN detector needs the port. The port is typically found
 	// by the Port Detector. If BaseDN detector was run first, it will not have
 	// all necessary information. Only after Port Detector was executed…
-	model.registerDetector(portDetector);
-	model.registerDetector(baseDNDetector);
-	model.registerDetector(userObjectClassDetector);
+	for(var i = 0; i <= detectors.length; i++) {
+		model.registerDetector(detectors[i]);
+	}
 
 	var userFilterTab = new OCA.LDAP.Wizard.WizardTabUserFilter();
 

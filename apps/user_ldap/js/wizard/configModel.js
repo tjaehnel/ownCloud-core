@@ -220,6 +220,22 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * @typedef {object} ErrorPayload
+		 * @property {string} message
+		 * @property {string} relatedKey
+		 */
+
+		/**
+		 * broadcasts an error message, if a wizard reply ended up in an error.
+		 * To be called by detectors.
+		 *
+		 * @param {ErrorPayload} payload
+		 */
+		gotServerError: function(payload) {
+			this._broadcast('serverError', payload);
+		},
+
+		/**
 		 * detectionStarted Event
 		 *
 		 * @event ConfigModel#detectionStarted
@@ -308,14 +324,19 @@ OCA = OCA || {};
 		requestWizard: function(featureKey) {
 			var model = this;
 			var detectorCount = this.detectors.length;
+			var found = false;
 			for(var i = 0; i < detectorCount; i++) {
 				if(this.detectors[i].runsOnFeatureRequest(featureKey)) {
+					found = true;
 					(function (detector) {
 						model.detectorQueue.add(function() {
 							return detector.run(model, model.configID);
 						});
 					})(model.detectors[i]);
 				}
+			}
+			if(!found) {
+				console.warn('No detector found for feature ' + featureKey);
 			}
 		},
 
@@ -355,9 +376,6 @@ OCA = OCA || {};
 			var subscribers = this.subscribers[name];
 			var subscriberCount = subscribers.length;
 			for(var i = 0; i < subscriberCount; i++) {
-				console.trace();
-				console.log(subscribers[i]);
-				console.log(params);
 				subscribers[i]['fn'](subscribers[i]['context'], params);
 			}
 		},

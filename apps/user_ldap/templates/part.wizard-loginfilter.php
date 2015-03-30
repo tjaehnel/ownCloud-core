@@ -1,11 +1,11 @@
 <fieldset id="ldapWizard3">
 	<div>
 		<p>
-			<?php p($l->t('Users login with this attribute:'));?>
+			<?php p($l->t('When logging in, %s will find the user based on the following attributes:', $theme->getName()));?>
 		</p>
 		<p>
 			<label for="ldap_loginfilter_username">
-				<?php p($l->t('LDAP Username:'));?>
+				<?php p($l->t('LDAP / AD Username:'));?>
 			</label>
 
 			<input type="checkbox" id="ldap_loginfilter_username"
@@ -13,7 +13,7 @@
 		</p>
 		<p>
 			<label for="ldap_loginfilter_email">
-				<?php p($l->t('LDAP Email Address:'));?>
+				<?php p($l->t('LDAP / AD Email Address:'));?>
 			</label>
 
 			<input type="checkbox" id="ldap_loginfilter_email"
@@ -34,7 +34,7 @@
 		<p id="rawLoginFilterContainer" class="invisible">
 			<input type="text" id="ldap_login_filter" name="ldap_login_filter"
 				class="lwautosave"
-				placeholder="<?php p($l->t('Raw LDAP filter'));?>"
+				placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 				title="<?php p($l->t('Defines the filter to apply, when login is attempted. %%uid replaces the username in the login action. Example: "uid=%%uid"'));?>"
 			/>
 		</p>

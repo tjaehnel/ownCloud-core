@@ -46,6 +46,21 @@ OCA = OCA || {};
 			this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 			this.configModel.on('detectionStarted', this.onDetectionStarted, this);
 			this.configModel.on('detectionCompleted', this.onDetectionCompleted, this);
+			this.configModel.on('serverError', this.onServerError, this);
+		},
+
+		/**
+		 * the method can be used to display a different error/information
+		 * message than provided by the ownCloud server response. The concrete
+		 * Tab View may optionally implement it. Returning an empty string will
+		 * avoid any notification.
+		 *
+		 * @param {string} message
+		 * @param {string} key
+		 * @returns {string}
+		 */
+		overrideErrorMessage: function(message, key) {
+			return message;
 		},
 
 		/**
@@ -53,6 +68,21 @@ OCA = OCA || {};
 		 * The concrete tab view can implement this if necessary.
 		 */
 		onActivate: function() { },
+
+		/**
+		 * displays server error messages.
+		 *
+		 * @param view
+		 * @param payload
+		 */
+		onServerError: function(view, payload) {
+			if (   !_.isUndefined(view.managedItems[payload.relatedKey])) {
+				var message = view.overrideErrorMessage(payload.message, payload.relatedKey);
+				if(message.length > 0) {
+					OC.Notification.showTemporary(message);
+				}
+			}
+		},
 
 		/**
 		 * disables affected, managed fields if a detector is running against them
@@ -88,7 +118,6 @@ OCA = OCA || {};
 		 * @param {string|number} value
 		 */
 		setElementValue: function($element, value) {
-			//var $element = $(elementID);
 			// deal with check box
 			if($element.is('input[type=checkbox]')) {
 				this._setCheckBox($element, value);
@@ -103,12 +132,28 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * replaces options on a multiselect element
+		 *
+		 * @param {jQuery} $element - the multiselect element
+		 * @param {Array} options
+		 */
+		equipMultiSelect: function($element, options) {
+			$element.find('option').remove();
+			for (var i in options) {
+				var name = options[i];
+				var entry = "<option value='" + name + "'>" + name + "</option>";
+				$element.append(entry);
+			}
+			$element.multiselect('refresh');
+		},
+
+		/**
 		 * enables the specified HTML element
 		 *
 		 * @param {jQuery} $element
 		 */
 		enableElement: function($element) {
-			if($element.is('select[multiple]')) {
+			if($element.is('select[multiple]') && $element.find('option').length > 0) {
 				$element.multiselect("enable");
 			} else {
 				$element.prop('disabled', false);

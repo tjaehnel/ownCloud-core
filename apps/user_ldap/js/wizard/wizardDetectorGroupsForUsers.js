@@ -10,16 +10,19 @@ OCA = OCA || {};
 (function() {
 
 	/**
-	 * @classdesc a Port Detector. It executes the auto-detection of the port
-	 * by the ownCloud server, if requirements are met.
+	 * @classdesc detects groups for the users tab
 	 *
 	 * @constructor
 	 */
-	var WizardDetectorUserObjectClasses = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+	var WizardDetectorGroupsForUsers = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+		wizardMethod: 'determineGroupsForUsers',
+		configKey: 'ldap_userfilter_groups',
+		featureName: 'GroupsForUsers',
+
 		/** @inheritdoc */
 		init: function() {
 			// given, it is not a configuration key
-			this.setTargetKey('ldap_userfilter_objectclass');
+			this.setTargetKey(this.configKey);
 			this.runsOnRequest = true;
 		},
 
@@ -32,9 +35,9 @@ OCA = OCA || {};
 		 * @abstract
 		 */
 		run: function(model, configID) {
-			model.notifyAboutDetectionStart('ldap_userfilter_objectclass');
+			model.notifyAboutDetectionStart(this.configKey);
 			var params = OC.buildQueryString({
-				action: 'determineUserObjectClasses',
+				action: this.wizardMethod,
 				ldap_serverconfig_chooser: configID
 			});
 			return model.callWizard(params, this.processResult, this);
@@ -46,14 +49,15 @@ OCA = OCA || {};
 		processResult: function(model, detector, result) {
 			if(result.status === 'success') {
 				var payload = {
-					feature: 'UserObjectClasses',
-					data: result.options['ldap_userfilter_objectclass']
+					feature: detector.featureName,
+					data: result.options[detector.configKey]
 				};
 				model.inform(payload);
 			}
+
 			this._super(model, detector, result);
 		}
 	});
 
-	OCA.LDAP.Wizard.WizardDetectorUserObjectClasses = WizardDetectorUserObjectClasses;
+	OCA.LDAP.Wizard.WizardDetectorGroupsForUsers = WizardDetectorGroupsForUsers;
 })();

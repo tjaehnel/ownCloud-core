@@ -30,8 +30,9 @@ OCA = OCA || {};
 				ldap_user_filter_mode: {
 					setMethod: 'setFilterMode'
 				},
-				userFilterGroups: {
-					$element: $('#ldap_userfilter_groups')
+				ldap_userfilter_groups: {
+					$element: $('#ldap_userfilter_groups'),
+					setMethod: 'setGroups'
 				},
 				userFilterRawToggle: {
 					$element: $('#toggleRawUserFilter')
@@ -40,14 +41,14 @@ OCA = OCA || {};
 					$element: $('#rawUserFilterContainer')
 				}
 			};
-			/*ldap_userfilter_groups: 'setGroups',
+			/*
 			 ldap_userlist_filter: 'setFilter',
 			 ldap_user_count: 'setUserCount',*/
 			this.setManagedItems(items);
 
 			this.filterModeKey = 'ldapUserFilterMode';
 			this._initMultiSelect(
-				this.managedItems.userFilterGroups.$element,
+				this.managedItems.ldap_userfilter_groups.$element,
 				t('user_ldap', 'Select groups')
 			);
 			this._initMultiSelect(
@@ -61,7 +62,7 @@ OCA = OCA || {};
 				'ldap_user_filter_mode',
 				{
 					status: 'disabled',
-					$element: this.managedItems.userFilterGroups.$element
+					$element: this.managedItems.ldap_userfilter_groups.$element
 				}
 			);
 		},
@@ -74,9 +75,10 @@ OCA = OCA || {};
 		 */
 		setModel: function(configModel) {
 			this._super(configModel);
-			this.configModel.on('configLoaded', this.onConfigLoaded, this);
+			this.configModel.on('configLoaded', this.onConfigSwitch, this);
 			this.configModel.on('configUpdated', this.onConfigLoaded, this);
 			this.configModel.on('receivedLdapFeature', this.onFeatureReceived, this);
+			console.log('SETTER');
 		},
 
 		/**
@@ -90,14 +92,52 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * sets the selected groups
+		 *
+		 * @param {Array} groups
+		 */
+		setGroups: function(groups) {
+			console.log(groups);
+			this.setElementValue(this.managedItems.ldap_userfilter_groups.$element, groups);
+			this.managedItems.ldap_userfilter_groups.$element.multiselect('refresh');
+			//this.enableElement(this.managedItems.ldap_userfilter_groups.$element);
+		},
+
+		/**
+		 * @inheritdoc
+		 */
+		overrideErrorMessage: function(message, key) {
+			if(   key === 'ldap_userfilter_groups'
+			   && message === 'memberOf is not supported by the server'
+			) {
+				message = t('user_ldap', 'The group box was disabled, because the LDAP / AD server does not support memberOf.');
+			}
+			return message;
+		},
+
+		/**
 		 * populate objectClasses, when…
 		 * - this tab is being activated
 		 * - AND they are not populated yet
 		 */
 		onActivate: function() {
 			if(this.managedItems.ldap_userfilter_objectclass.$element.find('option').length === 0) {
+				this.disableElement(this.managedItems.ldap_userfilter_groups.$element);
 				this.configModel.requestWizard('ldap_userfilter_objectclass');
+				this.configModel.requestWizard('ldap_userfilter_groups');
 			}
+		},
+
+		/**
+		 * resets the view when a configuration switch happened.
+		 *
+		 * @param {WizardTabUserFilter} view
+		 * @param {Object} configuration
+		 */
+		onConfigSwitch: function(view, configuration) {
+			view.managedItems.ldap_userfilter_objectclass.$element.find('option').remove();
+			view.managedItems.ldap_userfilter_groups.$element.find('option').remove();
+			view.onConfigLoaded(view, configuration);
 		},
 
 		/**
@@ -114,7 +154,9 @@ OCA = OCA || {};
 				if(!_.isUndefined(configuration[key])) {
 					var value = configuration[key];
 					var methodName = view.managedItems[key].setMethod;
-					view[methodName](value);
+					if(!_.isUndefined(view[methodName])) {
+						view[methodName](value);
+					}
 				}
 			}
 		},
@@ -148,14 +190,11 @@ OCA = OCA || {};
 		 */
 		onFeatureReceived: function(view, payload) {
 			if(payload.feature === 'UserObjectClasses') {
-				view.managedItems.ldap_userfilter_objectclass.$element.find('option').remove();
-				for (var i in payload.data) {
-					//FIXME: move HTML into template
-					var name = payload.data[i];
-					var entry = "<option value='" + name + "'>" + name + "</option>";
-					view.managedItems.ldap_userfilter_objectclass.$element.append(entry);
-				}
-				view.managedItems.ldap_userfilter_objectclass.$element.multiselect('refresh');
+				view.equipMultiSelect(view.managedItems.ldap_userfilter_objectclass.$element, payload.data);
+			} else if (payload.feature === 'GroupsForUsers') {
+				view.equipMultiSelect(view.managedItems.ldap_userfilter_groups.$element, payload.data);
+			} else {
+				console.log('UNHANDLED ' + payload.feature);
 			}
 		}
 	});

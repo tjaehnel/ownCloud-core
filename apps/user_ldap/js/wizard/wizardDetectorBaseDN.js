@@ -28,16 +28,6 @@ OCA = OCA || {};
 			this.setTargetKey('ldap_dn');
 		},
 
-		/** @inheritdoc */
-		overrideErrorMessage: function(message) {
-			if(   message === 'Server is unwilling to perform'
-			   || message === 'Could not connect to LDAP'
-			) {
-				return t('user_ldap', 'Base DN could not be auto-detected, please revise credentials, host and port.');
-			}
-			return t('user_ldap', 'Please specify a Base DN, it could not be auto-detected.');
-		},
-
 		/**
 		 * runs the detector, if specified configuration settings are set and
 		 * base DN is not set.

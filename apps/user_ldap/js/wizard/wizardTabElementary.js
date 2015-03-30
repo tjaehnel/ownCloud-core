@@ -183,6 +183,30 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * @inheritdoc
+		 */
+		overrideErrorMessage: function(message, key) {
+			console.log(message + ' ' + key);
+			switch(key) {
+				case 'ldap_port':
+					if (message === 'Invalid credentials') {
+						return t('user_ldap', 'Please check the credentials, they seem to be wrong.');
+					} else {
+						return t('user_ldap', 'Please specify the port, it could not be auto-detected.');
+					}
+					break;
+				case 'ldap_dn':
+					if(   message === 'Server is unwilling to perform'
+						|| message === 'Could not connect to LDAP'
+					) {
+						return t('user_ldap', 'Base DN could not be auto-detected, please revise credentials, host and port.');
+					}
+					return t('user_ldap', 'Please specify a Base DN, it could not be auto-detected.');
+			}
+			return message;
+		},
+
+		/**
 		 * updates the tab when the model loaded a configuration and notified
 		 * this view.
 		 *

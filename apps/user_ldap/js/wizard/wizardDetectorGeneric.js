@@ -90,18 +90,6 @@ OCA = OCA || {};
 		},
 
 		/**
-		 * the method can be used to display a different error/information
-		 * message than provided by the ownCloud server response. The concrete
-		 * Detector may optionally implement it.
-		 *
-		 * @param {string} message
-		 * @returns {string}
-		 */
-		overrideErrorMessage: function(message) {
-			return message;
-		},
-
-		/**
 		 * processes the result of the ownCloud server
 		 *
 		 * @param {OCA.LDAP.Wizard.ConfigModel} model
@@ -116,10 +104,11 @@ OCA = OCA || {};
 					model['update'](id, result.changes[id]);
 				}
 			} else {
-				var message = detector.overrideErrorMessage(result.message);
-				if(!_.isUndefined(message)) {
-					OC.Notification.showTemporary(message);
+				var payload = { relatedKey: detector.targetKey };
+				if(!_.isUndefined(result.message)) {
+					payload.message = result.message;
 				}
+				model.gotServerError(payload);
 			}
 		}
 	});

@@ -27,7 +27,7 @@
 		<p id="rawUserFilterContainer" class="invisible">
 			<input type="text" id="ldap_userlist_filter" name="ldap_userlist_filter"
 			class="lwautosave"
-			placeholder="<?php p($l->t('Raw LDAP filter'));?>"
+			placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 			title="<?php p($l->t('The filter specifies which LDAP users shall have access to the %s instance.', $theme->getName()));?>"
 			/>
 			<button class="ldapGetEntryCount hidden" name="ldapGetEntryCount" type="button">
