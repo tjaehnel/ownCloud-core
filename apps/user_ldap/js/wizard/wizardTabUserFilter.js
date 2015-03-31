@@ -86,7 +86,6 @@ OCA = OCA || {};
 			this.configModel.on('configLoaded', this.onConfigSwitch, this);
 			this.configModel.on('configUpdated', this.onConfigLoaded, this);
 			this.configModel.on('receivedLdapFeature', this.onFeatureReceived, this);
-			console.log('SETTER');
 		},
 
 		/**

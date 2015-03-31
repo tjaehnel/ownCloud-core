@@ -25,32 +25,35 @@ OCA = OCA || {};
 			this.configChooserID = '#ldap_serverconfig_chooser';
 
 			var items = {
-				'ldap_host': {
+				ldap_host: {
 					$element: $('#ldap_host'),
 					setMethod: 'setHost'
 				},
-				'ldap_port': {
+				ldap_port: {
 					$element: $('#ldap_port'),
-					setMethod: 'setPort'
+					setMethod: 'setPort',
+					$relatedElements: $('.ldapDetectPort')
 				},
-				'ldap_dn': {
+				ldap_dn: {
 					$element: $('#ldap_dn'),
 					setMethod: 'setAgentDN'
 				},
-				'ldap_agent_password': {
+				ldap_agent_password: {
 					$element: $('#ldap_agent_password'),
 					setMethod: 'setAgentPwd'
 				},
-				'ldap_base': {
+				ldap_base: {
 					$element: $('#ldap_base'),
 					setMethod: 'setBase'
 				},
-				'ldap_experienced_admin': {
+				ldap_experienced_admin: {
 					$element: $('#ldap_experienced_admin'),
 					setMethod: 'setExperiencedAdmin'
-				}
+				},
 			};
 			this.setManagedItems(items);
+			_.bindAll(this, 'onPortButtonClick');
+			this.managedItems.ldap_port.$relatedElements.click(this.onPortButtonClick);
 		},
 
 		/**
@@ -61,7 +64,7 @@ OCA = OCA || {};
 		 */
 		setModel: function(configModel) {
 			this._super(configModel);
-			this.configModel.on('configLoaded', this.onConfigLoaded, this);
+			this.configModel.on('configLoaded', this.onConfigSwitch, this);
 			this.configModel.on('configUpdated', this.onConfigLoaded, this);
 			this.configModel.on('setCompleted', this.onItemSaved, this);
 			this.configModel.on('newConfiguration', this.onNewConfiguration, this);
@@ -86,6 +89,11 @@ OCA = OCA || {};
 		 */
 		setHost: function(host) {
 			this.setElementValue(this.managedItems.ldap_host.$element, host);
+			if(host) {
+				this.enableElement(this.managedItems.ldap_port.$relatedElements);
+			} else {
+				this.disableElement(this.managedItems.ldap_port.$relatedElements);
+			}
 		},
 
 		/**
@@ -207,6 +215,18 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * resets the view when a configuration switch happened.
+		 *
+		 * @param {WizardTabElementary} view
+		 * @param {Object} configuration
+		 */
+		onConfigSwitch: function(view, configuration) {
+			view.disableElement(view.managedItems.ldap_port.$relatedElements);
+
+			view.onConfigLoaded(view, configuration);
+		},
+
+		/**
 		 * updates the tab when the model loaded a configuration and notified
 		 * this view.
 		 *
@@ -283,6 +303,16 @@ OCA = OCA || {};
 			} else {
 				OC.Notification.showTemporary(result.errorMessage);
 			}
+		},
+
+		/**
+		 * request to count the users with the current filter
+		 *
+		 * @param {Event} event
+		 */
+		onPortButtonClick: function(event) {
+			event.preventDefault();
+			this.configModel.requestWizard('ldap_port');
 		},
 
 		/**

@@ -41,6 +41,9 @@
 							<input type="number" id="ldap_port" name="ldap_port"
 								class="lwautosave"
 								placeholder="<?php p($l->t('Port'));?>" />
+							<button class="ldapDetectPort" name="ldapDetectPort" type="button">
+								<?php p($l->t('Detect Port'));?>
+							</button>
 						</span>
 					</div>
 				</div>

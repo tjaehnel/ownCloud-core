@@ -18,13 +18,8 @@ OCA = OCA || {};
 	var WizardDetectorPort = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
 		/** @inheritdoc */
 		init: function() {
-			this.setTrigger([
-				'ldap_host',
-				'ldap_port',
-				'ldap_dn',
-				'ldap_agent_password'
-			]);
 			this.setTargetKey('ldap_port');
+			this.runsOnRequest = true;
 		},
 
 		/**
@@ -36,11 +31,6 @@ OCA = OCA || {};
 		 * @abstract
 		 */
 		run: function(model, configID) {
-			if(model.configuration['ldap_port']) {
-				// don't attempt to overwrite a configured port
-				return false;
-			}
-
 			model.notifyAboutDetectionStart('ldap_port');
 			var params = OC.buildQueryString({
 				action: 'guessPortAndTLS',
