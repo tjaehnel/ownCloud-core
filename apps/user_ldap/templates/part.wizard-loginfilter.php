@@ -29,7 +29,7 @@
 			</select>
 		</p>
 		<p>
-			<label><a id='toggleRawLoginFilter'>↓ <?php p($l->t('Edit raw filter instead'));?></a></label>
+			<label><a id='toggleRawLoginFilter'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
 		</p>
 		<p id="rawLoginFilterContainer" class="invisible">
 			<input type="text" id="ldap_login_filter" name="ldap_login_filter"
