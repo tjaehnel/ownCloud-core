@@ -13,6 +13,10 @@
 			</select>
 		</p>
 		<p>
+			<label></label>
+			<span class="ldapInputColElement"><?php p($l->t('The most common object classes for users are organizationalPerson, person, user, and inetOrgPerson. If you are not sure which object class to select, please consult your directory admin.'));?></span>
+		</p>
+		<p>
 			<label for="ldap_userfilter_groups">
 				<?php p($l->t('Only from these groups:'));?>
 			</label>
