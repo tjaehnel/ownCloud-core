@@ -34,6 +34,10 @@ OCA = OCA || {};
 					$element: $('#ldap_userfilter_groups'),
 					setMethod: 'setGroups'
 				},
+				ldap_userlist_filter: {
+					$element: $('#ldap_userlist_filter'),
+					setMethod: 'setUserFilter'
+				},
 				userFilterRawToggle: {
 					$element: $('#toggleRawUserFilter')
 				},
@@ -97,10 +101,18 @@ OCA = OCA || {};
 		 * @param {Array} groups
 		 */
 		setGroups: function(groups) {
-			console.log(groups);
 			this.setElementValue(this.managedItems.ldap_userfilter_groups.$element, groups);
 			this.managedItems.ldap_userfilter_groups.$element.multiselect('refresh');
-			//this.enableElement(this.managedItems.ldap_userfilter_groups.$element);
+		},
+
+		/**
+		 * sets the user list filter
+		 *
+		 * @param {string} filter
+		 */
+		setUserFilter: function(filter) {
+			this.setElementValue(this.managedItems.ldap_userlist_filter.$element, filter);
+			this.$filterModeRawContainer.siblings('.ldapReadOnlyFilterContainer').find('.ldapFilterReadOnlyElement').text(filter);
 		},
 
 		/**

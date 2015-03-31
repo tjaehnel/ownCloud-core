@@ -149,7 +149,7 @@ OCA = OCA || {};
 		 */
 		set: function(key, value) {
 			if(_.isUndefined(this.configuration[key])) {
-				console.log('will not save undefined key');
+				console.warn('will not save undefined key: ' + key);
 				console.log(this.configuration);
 				return false;
 			}

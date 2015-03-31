@@ -28,9 +28,13 @@
 		<p>
 			<label><a id='toggleRawUserFilter'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
 		</p>
-		<p id="rawUserFilterContainer" class="invisible">
+		<p id="ldapReadOnlyUserFilterContainer" class="hidden ldapReadOnlyFilterContainer">
+			<label><?php p($l->t('LDAP Filter:'));?></label>
+			<span class="ldapFilterReadOnlyElement ldapInputColElement"></span>
+		</p>
+		<p id="rawUserFilterContainer">
 			<input type="text" id="ldap_userlist_filter" name="ldap_userlist_filter"
-			class="lwautosave"
+			class="lwautosave ldapFilterInputElement"
 			placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 			title="<?php p($l->t('The filter specifies which LDAP users shall have access to the %s instance.', $theme->getName()));?>"
 			/>

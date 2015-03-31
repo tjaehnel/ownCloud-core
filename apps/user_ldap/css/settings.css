@@ -114,6 +114,10 @@
 	padding-left: 10px;
 }
 
+span.ldapInputColElement {
+	margin-top: 9px;
+}
+
 #ldap fieldset p input[type=checkbox] {
 	vertical-align: bottom;
 }

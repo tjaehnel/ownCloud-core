@@ -219,7 +219,8 @@ OCA = OCA || {};
 			var view = this;
 
 			for(var id in this.managedItems) {
-				if(_.isUndefined(this.managedItems[id].$element)) {
+				if(_.isUndefined(this.managedItems[id].$element)
+				   || _.isUndefined(this.managedItems[id].setMethod)) {
 					continue;
 				}
 				var $element = this.managedItems[id].$element;
@@ -320,8 +321,10 @@ OCA = OCA || {};
 		 */
 		_setFilterModeAssisted: function() {
 			var view = this;
-
 			this.$filterModeRawContainer.addClass('invisible');
+			var filter = this.$filterModeRawContainer.find('.ldapFilterInputElement').val();
+			this.$filterModeRawContainer.siblings('.ldapReadOnlyFilterContainer').find('.ldapFilterReadOnlyElement').text(filter);
+			this.$filterModeRawContainer.siblings('.ldapReadOnlyFilterContainer').removeClass('hidden');
 			$.each(this.filterModeDisableableElements, function(i, $element) {
 				view.enableElement($element);
 			});
@@ -339,8 +342,8 @@ OCA = OCA || {};
 		 */
 		_setFilterModeRaw: function() {
 			var view = this;
-
 			this.$filterModeRawContainer.removeClass('invisible');
+			this.$filterModeRawContainer.siblings('.ldapReadOnlyFilterContainer').addClass('hidden');
 			$.each(this.filterModeDisableableElements, function (i, $element) {
 				view.disableElement($element);
 			});
@@ -394,21 +397,20 @@ OCA = OCA || {};
 				}
 				/** var {number} */
 				var mode;
-				if (view.$filterModeRawContainer.hasClass('invisible')) {
-					view._setFilterModeRaw();
+				console.log(view.parsedFilterMode);
+				if (view.parsedFilterMode === view.configModel.FILTER_MODE_ASSISTED) {
 					mode = view.configModel.FILTER_MODE_RAW;
 				} else {
-					view._setFilterModeAssisted();
 					mode = view.configModel.FILTER_MODE_ASSISTED;
 				}
-				var key = view.filterModeKey;
+				view.setFilterMode(mode);
 				/** @var {viewSaveInfo} */
 				var saveInfo = {
 					val: function () {
 						return mode;
 					},
 					attr: function () {
-						return key;
+						return view.filterModeKey;
 					},
 					is: function () {
 						return false;
