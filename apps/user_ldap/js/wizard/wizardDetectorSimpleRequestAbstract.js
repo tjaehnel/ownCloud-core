@@ -15,18 +15,7 @@ OCA = OCA || {};
 	 *
 	 * @constructor
 	 */
-	var WizardDetectorFilterAbstract = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
-		/** @inheritdoc */
-		init: function() {
-			this.setTrigger([
-				'ldap_userfilter_groups',
-				'ldap_userfilter_objectclass'
-			]);
-			this.setTargetKey('ldap_userlist_filter');
-
-			this.runsOnRequest = true;
-		},
-
+	var WizardDetectorFilterSimpleRequestAbstract = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
 		/**
 		 * runs the detector, if port is not set.
 		 *
@@ -49,5 +38,5 @@ OCA = OCA || {};
 		}
 	});
 
-	OCA.LDAP.Wizard.WizardDetectorFilterAbstract = WizardDetectorFilterAbstract;
+	OCA.LDAP.Wizard.WizardDetectorFilterSimpleRequestAbstract = WizardDetectorFilterSimpleRequestAbstract;
 })();

@@ -44,8 +44,9 @@ OCP\Util::addScript('user_ldap', 'experiencedAdmin');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorBaseDN');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorUserObjectClasses');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorGroupsForUsers');
-\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorFilterAbstract');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorSimpleRequestAbstract');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorFilterUser');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorUserCount');
 \OCP\Util::addScript('user_ldap', 'wizard/wizard');
 
 OCP\Util::addStyle('user_ldap', 'settings');

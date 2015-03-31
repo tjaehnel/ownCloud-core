@@ -43,11 +43,13 @@ OCA = OCA || {};
 				},
 				userFilterRawContainer: {
 					$element: $('#rawUserFilterContainer')
+				},
+				ldap_user_count: {
+					$element: $('#ldap_user_count'),
+					$relatedElements: $('.ldapGetUserCount'),
+					setMethod: 'setUserCount'
 				}
 			};
-			/*
-			 ldap_userlist_filter: 'setFilter',
-			 ldap_user_count: 'setUserCount',*/
 			this.setManagedItems(items);
 
 			this.filterModeKey = 'ldapUserFilterMode';
@@ -69,6 +71,8 @@ OCA = OCA || {};
 					$element: this.managedItems.ldap_userfilter_groups.$element
 				}
 			);
+			_.bindAll(this, 'onCountButtonClick');
+			this.managedItems.ldap_user_count.$relatedElements.click(this.onCountButtonClick);
 		},
 
 		/**
@@ -116,6 +120,16 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * sets the user count string
+		 *
+		 * @param {string} resultString
+		 */
+		setUserCount: function(countInfo) {
+			this.setElementValue(this.managedItems.ldap_user_count.$element, countInfo);
+			console.log('user count set');
+		},
+
+		/**
 		 * @inheritdoc
 		 */
 		overrideErrorMessage: function(message, key) {
@@ -149,6 +163,8 @@ OCA = OCA || {};
 		onConfigSwitch: function(view, configuration) {
 			view.managedItems.ldap_userfilter_objectclass.$element.find('option').remove();
 			view.managedItems.ldap_userfilter_groups.$element.find('option').remove();
+			view.managedItems.ldap_user_count.$element.text('');
+
 			view.onConfigLoaded(view, configuration);
 		},
 
@@ -208,7 +224,20 @@ OCA = OCA || {};
 			} else {
 				console.log('UNHANDLED ' + payload.feature);
 			}
+		},
+
+		/**
+		 * request to count the users with the current filter
+		 *
+		 * @param {Event} event
+		 */
+		onCountButtonClick: function(event) {
+			event.preventDefault();
+			// let's clear the field
+			this.managedItems.ldap_user_count.$element.text('');
+			this.configModel.requestWizard('ldap_user_count');
 		}
+
 	});
 
 	OCA.LDAP.Wizard.WizardTabUserFilter = WizardTabUserFilter;

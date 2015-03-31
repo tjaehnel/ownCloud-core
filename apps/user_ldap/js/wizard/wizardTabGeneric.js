@@ -93,6 +93,9 @@ OCA = OCA || {};
 		onDetectionStarted: function(view, key) {
 			if(!_.isUndefined(view.managedItems[key])) {
 				view.disableElement(view.managedItems[key].$element);
+				if(!_.isUndefined(view.managedItems[key].$relatedElements)){
+					view.disableElement(view.managedItems[key].$relatedElements);
+				}
 				view.attachSpinner(view.managedItems[key].$element.attr('id'));
 			}
 		},
@@ -106,6 +109,9 @@ OCA = OCA || {};
 		onDetectionCompleted: function(view, key) {
 			if(!_.isUndefined(view.managedItems[key])) {
 				view.enableElement(view.managedItems[key].$element);
+				if(!_.isUndefined(view.managedItems[key].$relatedElements)){
+					view.enableElement(view.managedItems[key].$relatedElements);
+				}
 				view.removeSpinner(view.managedItems[key].$element.attr('id'));
 			}
 		},
@@ -119,16 +125,21 @@ OCA = OCA || {};
 		 */
 		setElementValue: function($element, value) {
 			// deal with check box
-			if($element.is('input[type=checkbox]')) {
+			if ($element.is('input[type=checkbox]')) {
 				this._setCheckBox($element, value);
 				return;
 			}
 
 			// deal with text area
-			if($element.is('textarea') && $.isArray(value)) {
+			if ($element.is('textarea') && $.isArray(value)) {
 				value = value.join("\n");
 			}
-			$element.val(value);
+
+			if ($element.is('span')) {
+				$element.text(value);
+			} else {
+				$element.val(value);
+			}
 		},
 
 		/**

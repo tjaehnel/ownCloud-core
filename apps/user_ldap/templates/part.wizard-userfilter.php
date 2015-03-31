@@ -38,15 +38,15 @@
 			placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 			title="<?php p($l->t('The filter specifies which LDAP users shall have access to the %s instance.', $theme->getName()));?>"
 			/>
-			<button class="ldapGetEntryCount hidden" name="ldapGetEntryCount" type="button">
-				<?php p($l->t('Test Filter'));?>
-			</button>
 		</p>
 		<p>
 			<div class="ldapWizardInfo invisible">&nbsp;</div>
 		</p>
 		<p class="ldap_count">
-			<span id="ldap_user_count">0 <?php p($l->t('users found'));?></span>
+			<button class="ldapGetEntryCount ldapGetUserCount" name="ldapGetEntryCount" type="button">
+				<?php p($l->t('Verify settings and count users'));?>
+			</button>
+			<span id="ldap_user_count"></span>
 		</p>
 		<?php print_unescaped($_['wizardControls']); ?>
 	</div>

@@ -197,7 +197,11 @@ OCA = OCA || {};
 			if(this.configuration[key] === value) {
 				return false;
 			}
-			this.configuration[key] = value;
+			if(!_.isUndefined(this.configuration[key])) {
+				// don't write e.g. count values to the configuration
+				// they don't go as feature, yet
+				this.configuration[key] = value;
+			}
 			var configPart = {};
 			configPart[key] = value;
 			this._broadcast('configUpdated', configPart);

@@ -214,8 +214,6 @@ OCA = OCA || {};
 		 * @param {Object} configuration
 		 */
 		onConfigLoaded: function(view, configuration) {
-			console.log('Elementary received config');
-
 			for(var key in view.managedItems){
 				if(!_.isUndefined(configuration[key])) {
 					var value = configuration[key];

@@ -67,9 +67,11 @@ class Wizard extends LDAPUtility {
 
 	/**
 	 * counts entries in the LDAP directory
+	 *
 	 * @param string $filter the LDAP search filter
 	 * @param string $type a string being either 'users' or 'groups';
-	 * @return int|bool
+	 * @return bool|int
+	 * @throws \Exception
 	 */
 	public function countEntries($filter, $type) {
 		$reqs = array('ldapHost', 'ldapPort', 'ldapBase');
@@ -80,15 +82,32 @@ class Wizard extends LDAPUtility {
 			throw new \Exception('Requirements not met', 400);
 		}
 
+		$attr = array('dn'); // default
+		$limit = 1001;
 		if($type === 'groups') {
-			$result =  $this->access->countGroups($filter);
+			$result =  $this->access->countGroups($filter, $attr, $limit);
 		} else if($type === 'users') {
-			$result = $this->access->countUsers($filter);
+			$result = $this->access->countUsers($filter, $attr, $limit);
 		} else {
-			throw new \Exception('internal error: invald object type', 500);
+			throw new \Exception('internal error: invalid object type', 500);
 		}
 
 		return $result;
+	}
+
+	/**
+	 * formats the return value of a count operation to the string to be
+	 * inserted.
+	 *
+	 * @param bool|int $count
+	 * @return int|string
+	 */
+	private function formatCountResult($count) {
+		$formatted = ($count !== false) ? $count : 0;
+		if($formatted > 1000) {
+			$formatted = '> 1000';
+		}
+		return $formatted;
 	}
 
 	public function countGroups() {
@@ -101,7 +120,7 @@ class Wizard extends LDAPUtility {
 		}
 
 		try {
-			$groupsTotal = $this->countEntries($filter, 'groups');
+			$groupsTotal = $this->formatCountResult($this->countEntries($filter, 'groups'));
 		} catch (\Exception $e) {
 			//400 can be ignored, 500 is forwarded
 			if($e->getCode() === 500) {
@@ -109,7 +128,6 @@ class Wizard extends LDAPUtility {
 			}
 			return false;
 		}
-		$groupsTotal = ($groupsTotal !== false) ? $groupsTotal : 0;
 		$output = self::$l->n('%s group found', '%s groups found', $groupsTotal, $groupsTotal);
 		$this->result->addChange('ldap_group_count', $output);
 		return $this->result;
@@ -122,8 +140,7 @@ class Wizard extends LDAPUtility {
 	public function countUsers() {
 		$filter = $this->access->getFilterForUserCount();
 
-		$usersTotal = $this->countEntries($filter, 'users');
-		$usersTotal = ($usersTotal !== false) ? $usersTotal : 0;
+		$usersTotal = $this->formatCountResult($this->countEntries($filter, 'users'));
 		$output = self::$l->n('%s user found', '%s users found', $usersTotal, $usersTotal);
 		$this->result->addChange('ldap_user_count', $output);
 		return $this->result;
