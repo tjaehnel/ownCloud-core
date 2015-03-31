@@ -321,6 +321,12 @@ OCA = OCA || {};
 			//TODO: make sure only one test is running at a time
 		},
 
+		/**
+		 * the view may request a call to the wizard, for instance to fetch
+		 * object classes or groups
+		 *
+		 * @param {string} featureKey
+		 */
 		requestWizard: function(featureKey) {
 			var model = this;
 			var detectorCount = this.detectors.length;
@@ -460,13 +466,12 @@ OCA = OCA || {};
 			// NOTE: detector's changes will not result in new _processSetResult
 			// calls, … in case they interfere it is because of this ;)
 			if(_.isUndefined(model.detectorQueue)) {
-				console.log("DetectorQueue was not set, detectors will not be fired");
+				console.warn("DetectorQueue was not set, detectors will not be fired");
 				return;
 			}
 			var detectorCount = model.detectors.length;
 			for(var i = 0; i < detectorCount; i++) {
 				if(model.detectors[i].triggersOn(params.cfgkey)) {
-					//var detector = model.detectors[i];
 					(function (detector) {
 						model.detectorQueue.add(function() {
 							return detector.run(model, model.configID);

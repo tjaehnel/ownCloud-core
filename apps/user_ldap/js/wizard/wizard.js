@@ -17,6 +17,7 @@ $(document).ready(function() {
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorBaseDN());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupsForUsers());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterUser());
 
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();
