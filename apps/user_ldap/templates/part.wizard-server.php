@@ -32,7 +32,7 @@
 			<div class="tablerow">
 				<div class="tablecell">
 					<div class="table">
-						<input type="text" class="host tablecell lwautosave" id="ldap_host"
+						<input type="text" class="host lwautosave" id="ldap_host"
 							name="ldap_host"
 							placeholder="<?php p($l->t('Host'));?>"
 							title="<?php p($l->t('You can omit the protocol, except you require SSL. Then start with ldaps://'));?>"

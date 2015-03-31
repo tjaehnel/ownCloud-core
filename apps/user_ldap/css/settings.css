@@ -1,6 +1,6 @@
 .table {
 	display: table;
-	width: 60%;
+	width: 85%;
 }
 
 .tablerow {
@@ -49,13 +49,16 @@
 }
 
 #ldapWizard1 .hostPortCombinator div span {
-	width: 7%;
-	display: table-cell;
+	width: 14.5%;
+	display: inline-block;
 	text-align: right;
 }
 
 #ldapWizard1 .host {
-	width: 96.5% !important;
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+	border: 0;
 }
 
 .tableCellInput {
