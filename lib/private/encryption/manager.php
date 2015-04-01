@@ -68,8 +68,7 @@ class Manager implements \OCP\Encryption\IManager {
 		$name = $module->getDisplayName();
 
 		if (isset($this->encryptionModules[$id])) {
-			$message = 'Id "' . $id . '" already used by encryption module "' . $name . '"';
-			throw new Exceptions\ModuleAlreadyExistsException($message);
+			throw new Exceptions\ModuleAlreadyExistsException($id, $name);
 		}
 
 		$defaultEncryptionModuleId = $this->getDefaultEncryptionModuleId();
