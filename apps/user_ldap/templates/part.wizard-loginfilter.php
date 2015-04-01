@@ -47,7 +47,15 @@
 		<p>
 			<div class="ldapWizardInfo invisible">&nbsp;</div>
 		</p>
-
+		<p class="ldap_verify">
+			<input type="text" id="ldap_test_loginname" name="ldap_test_loginname"
+				   placeholder="<?php p($l->t('Test Loginname'));?>"
+				   class="ldapVerifyInput"
+				   title="Attempts to receive a DN for the given loginname and the current login filter">
+			<button class="ldapVerifyLoginName" name="ldapTestLoginSettings" type="button">
+				<?php p($l->t('Verify settings'));?>
+			</button>
+		</p>
 		<?php print_unescaped($_['wizardControls']); ?>
 	</div>
 </fieldset>

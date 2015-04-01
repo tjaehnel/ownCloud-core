@@ -92,6 +92,23 @@ switch($action) {
 		exit;
 		break;
 
+	case 'testLoginName': {
+		try {
+			$loginName = $_POST['ldap_test_loginname'];
+			$result = $wizard->$action($loginName);
+			if($result !== false) {
+				OCP\JSON::success($result->getResultArray());
+				exit;
+			}
+		} catch (\Exception $e) {
+			\OCP\JSON::error(array('message' => $e->getMessage()));
+			exit;
+		}
+		\OCP\JSON::error();
+		exit;
+		break;
+	}
+
 	case 'save':
 		$key = isset($_POST['cfgkey']) ? $_POST['cfgkey'] : false;
 		$val = isset($_POST['cfgval']) ? $_POST['cfgval'] : null;

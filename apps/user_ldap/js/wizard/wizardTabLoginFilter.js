@@ -47,6 +47,10 @@ OCA = OCA || {};
 				},
 				loginFilterRawContainer: {
 					$element: $('#rawLoginFilterContainer')
+				},
+				ldap_test_loginname: {
+					$element: $('#ldap_test_loginname'),
+					$relatedElements: $('.ldapVerifyLoginName')
 				}
 			};
 			this.setManagedItems(items);
@@ -66,6 +70,8 @@ OCA = OCA || {};
 				],
 				'ldap_login_filter_mode'
 			);
+			_.bindAll(this, 'onVerifyClick');
+			this.managedItems.ldap_test_loginname.$relatedElements.click(this.onVerifyClick);
 		},
 
 		/**
@@ -121,6 +127,42 @@ OCA = OCA || {};
 			this.setElementValue(
 				this.managedItems.ldap_loginfilter_email.$element, useEmail
 			);
+		},
+
+		/**
+		 * presents the result of the login name test
+		 *
+		 * @param result
+		 */
+		handleLoginTestResult: function(result) {
+			var message;
+			var isHtml = false;
+			if(result.status === 'success') {
+				var usersFound = parseInt(result.changes.ldap_test_loginname, 10);
+				if(usersFound < 1) {
+					var filter = result.changes.ldap_test_effective_filter;
+					message = t('user_ldap', 'User not found. Please check your login attributes and username. Effective filter (to copy-and-paste for command line validation): <br/>' + filter);
+					console.warn(filter);
+					isHtml = true;
+				} else if(usersFound === 1) {
+					message = t('user_ldap', 'User found and settings verified.');
+				} else if(usersFound > 1) {
+					message = t('user_ldap', 'Settings verified, but one user found. Only the first will be able to login. Consider a more narrow filter.');
+				}
+			} else {
+				message = t('user_ldap', 'An unspecified error occurred. Please check the settings and the log.');
+				if(!_.isUndefined(result.message) && result.message) {
+					message = result.message;
+				}
+				if(message === 'Bad search filter') {
+					message = t('user_ldap', 'The search filter is invalid, probably due to syntax issues like uneven number of opened and closed brackets. Please revise.');
+				} else if(message === 'connection error') {
+					message = t('user_ldap', 'A connection error to LDAP / AD occurred, please check host, port and credentials.');
+				} else if(message === 'missing placeholder') {
+					message = t('user_ldap', 'The %uid placeholder is missing. It will be replaced with the login name when querying LDAP / AD.');
+				}
+			}
+			OC.Notification.showTemporary(message, {isHTML: isHtml});
 		},
 
 		/**
@@ -198,6 +240,23 @@ OCA = OCA || {};
 		onFeatureReceived: function(view, payload) {
 			if(payload.feature === 'AvailableAttributes') {
 				view.equipMultiSelect(view.managedItems.ldap_loginfilter_attributes.$element, payload.data);
+			} else if(payload.feature === 'TestLoginName') {
+				view.handleLoginTestResult(payload.data);
+			}
+		},
+
+		/**
+		 * request to test the  provided login name
+		 *
+		 * @param {Event} event
+		 */
+		onVerifyClick: function(event) {
+			event.preventDefault();
+			var testLogin = this.managedItems.ldap_test_loginname.$element.val();
+			if(!testLogin) {
+				OC.Notification.showTemporary(t('user_ldap', 'Please provide a login name to test against'), 3);
+			} else {
+				this.configModel.requestWizard('ldap_test_loginname', {ldap_test_loginname: testLogin});
 			}
 		}
 

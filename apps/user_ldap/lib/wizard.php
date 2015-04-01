@@ -613,6 +613,41 @@ class Wizard extends LDAPUtility {
 	}
 
 	/**
+	 * @return bool|WizardResult
+	 * @param string $loginName
+	 * @throws \Exception
+	 */
+	public function testLoginName($loginName) {
+		if(!$this->checkRequirements(array('ldapHost',
+			'ldapPort',
+			'ldapBase',
+			'ldapLoginFilter',
+		))) {
+			return false;
+		}
+
+		$cr = $this->access->connection->getConnectionResource();
+		if(!$this->ldap->isResource($cr)) {
+			throw new \Exception('connection error');
+		}
+
+		if(mb_strpos($this->access->connection->ldapLoginFilter, '%uid', 0, 'UTF-8')
+			=== false) {
+			throw new \Exception('missing placeholder');
+		}
+
+		$users = $this->access->fetchUsersByLoginName($loginName);
+		if($this->ldap->errno($cr) !== 0) {
+			throw new \Exception($this->ldap->error($cr));
+		}
+		$filter = \OCP\Util::mb_str_replace(
+			'%uid', $loginName, $this->access->connection->ldapLoginFilter, 'UTF-8');
+		$this->result->addChange('ldap_test_loginname', count($users));
+		$this->result->addChange('ldap_test_effective_filter', $filter);
+		return $this->result;
+	}
+
+	/**
 	 * Tries to determine the port, requires given Host, User DN and Password
 	 * @return WizardResult|false WizardResult on success, false otherwise
 	 * @throws \Exception

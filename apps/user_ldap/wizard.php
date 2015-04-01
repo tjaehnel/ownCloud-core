@@ -50,6 +50,8 @@ OCP\Util::addScript('user_ldap', 'experiencedAdmin');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorFilterLogin');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorUserCount');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorAvailableAttributes');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorTestAbstract');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorTestLoginName');
 \OCP\Util::addScript('user_ldap', 'wizard/wizard');
 
 OCP\Util::addStyle('user_ldap', 'settings');

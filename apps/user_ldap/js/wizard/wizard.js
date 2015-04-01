@@ -20,6 +20,7 @@ $(document).ready(function() {
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterLogin());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserCount());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorAvailableAttributes());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorTestLoginName());
 
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();

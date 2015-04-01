@@ -111,6 +111,10 @@
  	width: 60%;
 }
 
+input.ldapVerifyInput {
+	width: 150px !important;
+}
+
 .ldapInputColElement {
 	width: 35%;
 	display: inline-block;

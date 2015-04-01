@@ -330,8 +330,9 @@ OCA = OCA || {};
 		 * object classes or groups
 		 *
 		 * @param {string} featureKey
+		 * @param {Object} [additionalParams]
 		 */
-		requestWizard: function(featureKey) {
+		requestWizard: function(featureKey, additionalParams) {
 			var model = this;
 			var detectorCount = this.detectors.length;
 			var found = false;
@@ -340,7 +341,7 @@ OCA = OCA || {};
 					found = true;
 					(function (detector) {
 						model.detectorQueue.add(function() {
-							return detector.run(model, model.configID);
+							return detector.run(model, model.configID, additionalParams);
 						});
 					})(model.detectors[i]);
 				}

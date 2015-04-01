@@ -585,6 +585,22 @@ class Access extends LDAPUtility implements user\IUserTools {
 	}
 
 	/**
+	 * fetches a list of users according to a provided loginName and utilizing
+	 * the login filter.
+	 *
+	 * @param string $loginName
+	 * @param array $attributes optional, list of attributes to read
+	 * @return array
+	 */
+	public function fetchUsersByLoginName($loginName, $attributes = array('dn')) {
+		$loginName = $this->escapeFilterPart($loginName);
+		$filter = \OCP\Util::mb_str_replace(
+			'%uid', $loginName, $this->connection->ldapLoginFilter, 'UTF-8');
+		$users = $this->fetchListOfUsers($filter, $attributes);
+		return $users;
+	}
+
+	/**
 	 * @param string $filter
 	 * @param string|string[] $attr
 	 * @param int $limit
