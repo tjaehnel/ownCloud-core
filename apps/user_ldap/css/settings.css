@@ -121,6 +121,10 @@ input.ldapVerifyInput {
 	padding-left: 10px;
 }
 
+.ldapToggle {
+	text-decoration: underline;
+}
+
 span.ldapInputColElement {
 	margin-top: 9px;
 }

@@ -31,7 +31,7 @@
 			</select>
 		</p>
 		<p>
-			<label><a id='toggleRawLoginFilter'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
+			<label><a id='toggleRawLoginFilter' class='ldapToggle'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
 		</p>
 		<p id="ldapReadOnlyLoginFilterContainer" class="hidden ldapReadOnlyFilterContainer">
 			<label><?php p($l->t('LDAP Filter:'));?></label>
