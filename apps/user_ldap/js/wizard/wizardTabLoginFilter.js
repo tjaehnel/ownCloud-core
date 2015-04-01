@@ -60,6 +60,7 @@ OCA = OCA || {};
 				this.managedItems.ldap_loginfilter_attributes.$element,
 				t('user_ldap', 'Select attributes')
 			);
+			this.filterName = 'ldap_login_filter';
 			this._initFilterModeSwitcher(
 				this.managedItems.loginFilterRawToggle.$element,
 				this.managedItems.loginFilterRawContainer.$element,
@@ -169,12 +170,22 @@ OCA = OCA || {};
 		 * @inheritdoc
 		 */
 		considerFeatureRequests: function() {
+			if(!this.isActive) {
+				return;
+			}
 			if(this.managedItems.ldap_loginfilter_attributes.$element.find('option').length === 0) {
 				this.disableElement(this.managedItems.ldap_loginfilter_attributes.$element);
 				if(this.parsedFilterMode === this.configModel.FILTER_MODE_ASSISTED) {
 					this.configModel.requestWizard('ldap_loginfilter_attributes');
 				}
 			}
+		},
+
+		/**
+		 * @inheritdoc
+		 */
+		onActivate: function() {
+			this.considerFeatureRequests();
 		},
 
 		/**

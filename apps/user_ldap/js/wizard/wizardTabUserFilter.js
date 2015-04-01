@@ -61,6 +61,7 @@ OCA = OCA || {};
 				this.managedItems.ldap_userfilter_objectclass.$element,
 				t('user_ldap', 'Select object classes')
 			);
+			this.filterName = 'ldap_userlist_filter';
 			this._initFilterModeSwitcher(
 				this.managedItems.userFilterRawToggle.$element,
 				this.managedItems.userFilterRawContainer.$element,
@@ -144,6 +145,9 @@ OCA = OCA || {};
 		 * @inheritdoc
 		 */
 		considerFeatureRequests: function() {
+			if(!this.isActive) {
+				return;
+			}
 			if(this.managedItems.ldap_userfilter_objectclass.$element.find('option').length === 0) {
 				this.disableElement(this.managedItems.ldap_userfilter_objectclass.$element);
 				this.disableElement(this.managedItems.ldap_userfilter_groups.$element);
@@ -152,6 +156,13 @@ OCA = OCA || {};
 					this.configModel.requestWizard('ldap_userfilter_groups');
 				}
 			}
+		},
+
+		/**
+		 * @inheritdoc
+		 */
+		onActivate: function() {
+			this.considerFeatureRequests();
 		},
 
 		/**

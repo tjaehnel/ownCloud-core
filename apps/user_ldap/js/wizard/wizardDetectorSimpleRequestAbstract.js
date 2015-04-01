@@ -16,6 +16,8 @@ OCA = OCA || {};
 	 * @constructor
 	 */
 	var WizardDetectorFilterSimpleRequestAbstract = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+		runsOnRequest: true,
+
 		/**
 		 * runs the detector, if port is not set.
 		 *

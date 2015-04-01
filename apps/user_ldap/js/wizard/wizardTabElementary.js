@@ -22,6 +22,7 @@ OCA = OCA || {};
 		 */
 		init: function (tabIndex, tabID) {
 			this._super(tabIndex, tabID);
+			this.isActive = true;
 			this.configChooserID = '#ldap_serverconfig_chooser';
 
 			var items = {

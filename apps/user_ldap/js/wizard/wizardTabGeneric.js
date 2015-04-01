@@ -19,6 +19,7 @@ OCA = OCA || {};
 			this.tabIndex = tabIndex;
 			this.tabID = tabID;
 			this.spinner = $('.ldapSpinner').first().clone().removeClass('hidden');
+			this.isActive = false;
 			_.bindAll(this, '_toggleRawFilterMode', '_toggleRawFilterModeConfirmation');
 		},
 
@@ -318,6 +319,15 @@ OCA = OCA || {};
 		considerFeatureRequests: function() {},
 
 		/**
+		 * this is called when the filter mode is switched to Assisted. The
+		 * concrete tab view should request the compilation of the respective
+		 * filter.
+		 */
+		requestCompileFilter: function() {
+			this.configModel.requestWizard(this.filterName);
+		},
+
+		/**
 		 * sets the filter mode according to the provided configuration value
 		 *
 		 * @param {string} mode
@@ -327,6 +337,7 @@ OCA = OCA || {};
 				this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
 				this.considerFeatureRequests();
 				this._setFilterModeAssisted();
+				this.requestCompileFilter();
 			} else {
 				this._setFilterModeRaw();
 				this.parsedFilterMode = this.configModel.FILTER_MODE_RAW;
@@ -420,7 +431,6 @@ OCA = OCA || {};
 				}
 				/** var {number} */
 				var mode;
-				console.log(view.parsedFilterMode);
 				if (view.parsedFilterMode === view.configModel.FILTER_MODE_ASSISTED) {
 					mode = view.configModel.FILTER_MODE_RAW;
 				} else {

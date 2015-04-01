@@ -206,8 +206,23 @@ OCA = OCA || {};
 			}
 
 			var newTabID = ui.newTab[0].id;
+			if(newTabID === '#ldapWizard1') {
+				newTabID = 'server';
+			}
+			var oldTabID = ui.oldTab[0].id;
+			if(oldTabID === '#ldapWizard1') {
+				oldTabID = 'server';
+			}
 			if(!_.isUndefined(this.tabs[newTabID])) {
+				this.tabs[newTabID].isActive = true;
 				this.tabs[newTabID].onActivate();
+			} else {
+				console.warn('Unreferenced activated tab ' + newTabID);
+			}
+			if(!_.isUndefined(this.tabs[oldTabID])) {
+				this.tabs[newTabID].isActive = false;
+			} else {
+				console.warn('Unreferenced left tab ' + oldTabID);
 			}
 		},
 
