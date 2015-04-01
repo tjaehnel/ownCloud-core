@@ -180,16 +180,19 @@ class Manager implements \OCP\Encryption\IManager {
 	public static function setupStorage() {
 		\OC\Files\Filesystem::addStorageWrapper('oc_encryption', function ($mountPoint, $storage) {
 			$parameters = array('storage' => $storage, 'mountPoint' => $mountPoint);
-			$manager = \OC::$server->getEncryptionManager();
-			$util = new \OC\Encryption\Util(
-				new \OC\Files\View(),
-				\OC::$server->getUserManager(),
-				\OC::$server->getConfig());
-			$user = \OC::$server->getUserSession()->getUser();
-			$logger = \OC::$server->getLogger();
-			$uid = $user ? $user->getUID() : null;
-			$fileHelper = \OC::$server->getEncryptionFilesHelper();
-			return new \OC\Files\Storage\Wrapper\Encryption($parameters, $manager, $util, $logger, $fileHelper, $uid);
-		});
+
+			if (!($storage instanceof \OC\Files\Storage\Shared)) {
+				$manager = \OC::$server->getEncryptionManager();
+				$util = new \OC\Encryption\Util(
+					new \OC\Files\View(), \OC::$server->getUserManager(), \OC::$server->getConfig());
+				$user = \OC::$server->getUserSession()->getUser();
+				$logger = \OC::$server->getLogger();
+				$uid = $user ? $user->getUID() : null;
+				$fileHelper = \OC::$server->getEncryptionFilesHelper();
+				return new \OC\Files\Storage\Wrapper\Encryption($parameters, $manager, $util, $logger, $fileHelper, $uid);
+			} else {
+				return $storage;
+			}
+		}, 2);
 	}
 }
