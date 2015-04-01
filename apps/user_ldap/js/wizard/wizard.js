@@ -36,6 +36,7 @@ $(document).ready(function() {
 	var tabs = [];
 	tabs.push(new OCA.LDAP.Wizard.WizardTabUserFilter());
 	tabs.push(new OCA.LDAP.Wizard.WizardTabLoginFilter());
+	tabs.push(new OCA.LDAP.Wizard.WizardTabGroupFilter());
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();
