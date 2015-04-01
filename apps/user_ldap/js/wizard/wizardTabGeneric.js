@@ -311,6 +311,13 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * this is called when the filter mode is switched to assisted. The
+		 * concrete tab view should implement this, to load LDAP features
+		 * (e.g. object classes, groups, attributes…), if necessary.
+		 */
+		considerFeatureRequests: function() {},
+
+		/**
 		 * sets the filter mode according to the provided configuration value
 		 *
 		 * @param {string} mode
@@ -318,6 +325,7 @@ OCA = OCA || {};
 		setFilterMode: function(mode) {
 			if(parseInt(mode, 10) === this.configModel.FILTER_MODE_ASSISTED) {
 				this.parsedFilterMode = this.configModel.FILTER_MODE_ASSISTED;
+				this.considerFeatureRequests();
 				this._setFilterModeAssisted();
 			} else {
 				this._setFilterModeRaw();

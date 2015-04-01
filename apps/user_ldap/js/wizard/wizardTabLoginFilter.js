@@ -124,14 +124,14 @@ OCA = OCA || {};
 		},
 
 		/**
-		 * populate objectClasses, when…
-		 * - this tab is being activated
-		 * - AND they are not populated yet
+		 * @inheritdoc
 		 */
-		onActivate: function() {
+		considerFeatureRequests: function() {
 			if(this.managedItems.ldap_loginfilter_attributes.$element.find('option').length === 0) {
 				this.disableElement(this.managedItems.ldap_loginfilter_attributes.$element);
-				this.configModel.requestWizard('ldap_loginfilter_attributes');
+				if(this.parsedFilterMode === this.configModel.FILTER_MODE_ASSISTED) {
+					this.configModel.requestWizard('ldap_loginfilter_attributes');
+				}
 			}
 		},
 

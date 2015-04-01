@@ -141,15 +141,16 @@ OCA = OCA || {};
 		},
 
 		/**
-		 * populate objectClasses, when…
-		 * - this tab is being activated
-		 * - AND they are not populated yet
+		 * @inheritdoc
 		 */
-		onActivate: function() {
+		considerFeatureRequests: function() {
 			if(this.managedItems.ldap_userfilter_objectclass.$element.find('option').length === 0) {
+				this.disableElement(this.managedItems.ldap_userfilter_objectclass.$element);
 				this.disableElement(this.managedItems.ldap_userfilter_groups.$element);
-				this.configModel.requestWizard('ldap_userfilter_objectclass');
-				this.configModel.requestWizard('ldap_userfilter_groups');
+				if(this.parsedFilterMode === this.configModel.FILTER_MODE_ASSISTED) {
+					this.configModel.requestWizard('ldap_userfilter_objectclass');
+					this.configModel.requestWizard('ldap_userfilter_groups');
+				}
 			}
 		},
 
