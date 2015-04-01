@@ -38,6 +38,7 @@ OCP\Util::addScript('user_ldap', 'experiencedAdmin');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardTabGeneric');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardTabElementary');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardTabUserFilter');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardTabLoginFilter');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorQueue');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorGeneric');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorPort');
@@ -47,6 +48,7 @@ OCP\Util::addScript('user_ldap', 'experiencedAdmin');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorSimpleRequestAbstract');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorFilterUser');
 \OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorUserCount');
+\OCP\Util::addScript('user_ldap', 'wizard/wizardDetectorAvailableAttributes');
 \OCP\Util::addScript('user_ldap', 'wizard/wizard');
 
 OCP\Util::addStyle('user_ldap', 'settings');

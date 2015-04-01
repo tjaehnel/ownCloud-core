@@ -12,13 +12,13 @@ $(document).ready(function() {
 	detectorQueue.init();
 
 	var detectors = [];
-
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorPort());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorBaseDN());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupsForUsers());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterUser());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserCount());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorAvailableAttributes());
 
 	var model = new OCA.LDAP.Wizard.ConfigModel();
 	model.init();
@@ -31,12 +31,16 @@ $(document).ready(function() {
 		model.registerDetector(detectors[i]);
 	}
 
-	var userFilterTab = new OCA.LDAP.Wizard.WizardTabUserFilter();
+	var tabs = [];
+	tabs.push(new OCA.LDAP.Wizard.WizardTabUserFilter());
+	tabs.push(new OCA.LDAP.Wizard.WizardTabLoginFilter());
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();
 	view.setModel(model);
-	view.registerTab(userFilterTab, '#ldapWizard2');
+	for(var i = 0; i <= tabs.length; i++) {
+		view.registerTab(tabs[i], '#ldapWizard' + (i+2));
+	}
 
 	var controller = new OCA.LDAP.Wizard.Controller();
 	controller.init();

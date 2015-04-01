@@ -33,7 +33,7 @@
 		</p>
 		<p id="rawLoginFilterContainer" class="invisible">
 			<input type="text" id="ldap_login_filter" name="ldap_login_filter"
-				class="lwautosave"
+				class="lwautosave ldapFilterInputElement"
 				placeholder="<?php p($l->t('Edit LDAP Query'));?>"
 				title="<?php p($l->t('Defines the filter to apply, when login is attempted. %%uid replaces the username in the login action. Example: "uid=%%uid"'));?>"
 			/>

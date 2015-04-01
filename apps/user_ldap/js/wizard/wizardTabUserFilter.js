@@ -220,8 +220,6 @@ OCA = OCA || {};
 				view.equipMultiSelect(view.managedItems.ldap_userfilter_objectclass.$element, payload.data);
 			} else if (payload.feature === 'GroupsForUsers') {
 				view.equipMultiSelect(view.managedItems.ldap_userfilter_groups.$element, payload.data);
-			} else {
-				console.log('UNHANDLED ' + payload.feature);
 			}
 		},
 

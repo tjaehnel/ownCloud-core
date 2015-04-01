@@ -339,10 +339,12 @@ OCA = OCA || {};
 			$.each(this.filterModeDisableableElements, function(i, $element) {
 				view.enableElement($element);
 			});
-			if(this.filterModeStateElement.status === 'enabled') {
-				this.enableElement(this.filterModeStateElement.$element);
-			} else {
-				this.filterModeStateElement.status = 'disabled';
+			if(!_.isUndefined(this.filterModeStateElement)) {
+				if (this.filterModeStateElement.status === 'enabled') {
+					this.enableElement(this.filterModeStateElement.$element);
+				} else {
+					this.filterModeStateElement.status = 'disabled';
+				}
 			}
 		},
 
@@ -366,7 +368,9 @@ OCA = OCA || {};
 					this.filterModeStateElement.status = 'enabled';
 				}
 			}
-			this.disableElement(this.filterModeStateElement.$element);
+			if(!_.isUndefined(this.filterModeStateElement)) {
+				this.disableElement(this.filterModeStateElement.$element);
+			}
 		},
 
 		/**
