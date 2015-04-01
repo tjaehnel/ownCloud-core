@@ -33,6 +33,10 @@
 		<p>
 			<label><a id='toggleRawLoginFilter'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
 		</p>
+		<p id="ldapReadOnlyLoginFilterContainer" class="hidden ldapReadOnlyFilterContainer">
+			<label><?php p($l->t('LDAP Filter:'));?></label>
+			<span class="ldapFilterReadOnlyElement ldapInputColElement"></span>
+		</p>
 		<p id="rawLoginFilterContainer" class="invisible">
 			<input type="text" id="ldap_login_filter" name="ldap_login_filter"
 				class="lwautosave ldapFilterInputElement"
