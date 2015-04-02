@@ -95,8 +95,8 @@ class CacheWrapper extends Cache {
 	 *
 	 * @return int file id
 	 */
-	public function put($file, array $data) {
-		return $this->cache->put($file, $data);
+	public function put($file, array $data, $try = 1) {
+		return $this->cache->put($file, $data, $try);
 	}
 
 	/**

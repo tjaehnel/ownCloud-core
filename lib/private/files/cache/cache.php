@@ -238,11 +238,12 @@ class Cache {
 	 *
 	 * @param string $file
 	 * @param array $data
+	 * @param int $try
 	 *
 	 * @return int file id
 	 * @throws \RuntimeException
 	 */
-	public function put($file, array $data) {
+	public function put($file, array $data, $try = 1) {
 		if (($id = $this->getId($file)) > -1) {
 			$this->update($id, $data);
 			return $id;
@@ -275,11 +276,19 @@ class Cache {
 				return trim($item, "`");
 			}, $queryParts);
 			$values = array_combine($queryParts, $params);
-			if (\OC::$server->getDatabaseConnection()->insertIfNotExist('*PREFIX*filecache', $values, [
+
+			$connection = \OC::$server->getDatabaseConnection();
+			if ($connection->insertIfNotExist('*PREFIX*filecache', $values, [
 				'storage',
 				'path_hash',
 			])) {
 				return (int)\OC_DB::insertid('*PREFIX*filecache');
+			} else {
+				$query = $connection->prepare('SELECT `fileid`, `path`, `path_hash` FROM `*PREFIX*filecache` WHERE `storage` = ?');
+				$query->execute([$this->getNumericStorageId()]);
+				\OC::$server->getLogger()->error(
+					$file . '#md5(' . md5($file) .
+					' Found ' . $query->rowCount() . ' entries: ' . serialize($query->fetchAll()));
 			}
 
 			// The file was created in the mean time
@@ -287,7 +296,12 @@ class Cache {
 				$this->update($id, $data);
 				return $id;
 			} else {
-				throw new \RuntimeException('File entry exists when inserting and does not exist on select... go away');
+				if ($try == 10) {
+					throw new \Exception('AntiRecursionException');
+				}
+				// Race condition: file existed on insert, but was deleted when trying to update.
+				\OC::$server->getLogger()->error($file . '#' . $this->getNumericStorageId() . '#' . $try . '###retry');
+				$this->put($file, $data, $try + 1);
 			}
 		}
 	}

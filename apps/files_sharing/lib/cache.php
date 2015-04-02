@@ -189,10 +189,10 @@ class Shared_Cache extends Cache {
 	 *
 	 * @return int|false file id
 	 */
-	public function put($file, array $data) {
+	public function put($file, array $data, $try = 1) {
 		$file = ($file === false) ? '' : $file;
 		if ($cache = $this->getSourceCache($file)) {
-			return $cache->put($this->files[$file], $data);
+			return $cache->put($this->files[$file], $data, $try);
 		}
 		return false;
 	}
