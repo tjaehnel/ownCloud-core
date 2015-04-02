@@ -15,10 +15,14 @@ $(document).ready(function() {
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorPort());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorBaseDN());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserObjectClasses());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupObjectClasses());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupsForUsers());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupsForGroups());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterUser());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterLogin());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorFilterGroup());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorUserCount());
+	detectors.push(new OCA.LDAP.Wizard.WizardDetectorGroupCount());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorAvailableAttributes());
 	detectors.push(new OCA.LDAP.Wizard.WizardDetectorTestLoginName());
 

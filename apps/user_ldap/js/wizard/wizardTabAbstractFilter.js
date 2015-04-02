@@ -244,7 +244,7 @@ OCA = OCA || {};
 		onCountButtonClick: function(event) {
 			event.preventDefault();
 			// let's clear the field
-			this.managedItems.ldap_user_count.$element.text('');
+			this.getCountItem().$element.text('');
 			this.configModel.requestWizard(this.getCountItem().keyName);
 		}
 

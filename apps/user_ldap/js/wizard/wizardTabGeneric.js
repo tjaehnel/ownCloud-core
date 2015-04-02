@@ -79,7 +79,7 @@ OCA = OCA || {};
 		onServerError: function(view, payload) {
 			if (   !_.isUndefined(view.managedItems[payload.relatedKey])) {
 				var message = view.overrideErrorMessage(payload.message, payload.relatedKey);
-				if(message.length > 0) {
+				if(message) {
 					OC.Notification.showTemporary(message);
 				}
 			}

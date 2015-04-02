@@ -10,48 +10,18 @@ OCA = OCA || {};
 (function() {
 
 	/**
-	 * @classdesc a Port Detector. It executes the auto-detection of the port
-	 * by the ownCloud server, if requirements are met.
+	 * @classdesc discovers object classes for the users tab
 	 *
 	 * @constructor
 	 */
-	var WizardDetectorUserObjectClasses = OCA.LDAP.Wizard.WizardDetectorGeneric.subClass({
+	var WizardDetectorUserObjectClasses = OCA.LDAP.Wizard.WizardDetectorFeatureAbstract.subClass({
 		/** @inheritdoc */
 		init: function() {
 			// given, it is not a configuration key
 			this.setTargetKey('ldap_userfilter_objectclass');
+			this.wizardMethod = 'determineUserObjectClasses';
+			this.featureName = 'UserObjectClasses';
 			this.runsOnRequest = true;
-		},
-
-		/**
-		 * runs the detector, if port is not set.
-		 *
-		 * @param {OCA.LDAP.Wizard.ConfigModel} model
-		 * @param {string} configID - the configuration prefix
-		 * @returns {boolean|jqXHR}
-		 * @abstract
-		 */
-		run: function(model, configID) {
-			model.notifyAboutDetectionStart('ldap_userfilter_objectclass');
-			var params = OC.buildQueryString({
-				action: 'determineUserObjectClasses',
-				ldap_serverconfig_chooser: configID
-			});
-			return model.callWizard(params, this.processResult, this);
-		},
-
-		/**
-		 * @inheritdoc
-		 */
-		processResult: function(model, detector, result) {
-			if(result.status === 'success') {
-				var payload = {
-					feature: 'UserObjectClasses',
-					data: result.options['ldap_userfilter_objectclass']
-				};
-				model.inform(payload);
-			}
-			this._super(model, detector, result);
 		}
 	});
 

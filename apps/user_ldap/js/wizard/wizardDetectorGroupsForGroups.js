@@ -10,20 +10,20 @@ OCA = OCA || {};
 (function() {
 
 	/**
-	 * @classdesc detects groups for the users tab
+	 * @classdesc detects groups for the groups tab
 	 *
 	 * @constructor
 	 */
-	var WizardDetectorGroupsForUsers = OCA.LDAP.Wizard.WizardDetectorFeatureAbstract.subClass({
+	var WizardDetectorGroupsForGroups = OCA.LDAP.Wizard.WizardDetectorFeatureAbstract.subClass({
 		/** @inheritdoc */
 		init: function() {
 			// given, it is not a configuration key
-			this.setTargetKey('ldap_userfilter_groups');
-			this.wizardMethod = 'determineGroupsForUsers';
-			this.featureName = 'GroupsForUsers';
+			this.setTargetKey('ldap_groupfilter_groups');
+			this.wizardMethod = 'determineGroupsForGroups';
+			this.featureName = 'GroupsForGroups';
 			this.runsOnRequest = true;
 		}
 	});
 
-	OCA.LDAP.Wizard.WizardDetectorGroupsForUsers = WizardDetectorGroupsForUsers;
+	OCA.LDAP.Wizard.WizardDetectorGroupsForGroups = WizardDetectorGroupsForGroups;
 })();

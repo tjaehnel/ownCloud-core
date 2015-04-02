@@ -131,6 +131,6 @@ switch($action) {
 		OCP\JSON::success();
 		break;
 	default:
-		//TODO: return 4xx error
+		\OCP\JSON::error(array('message' => $l->t('Action does not exist')));
 		break;
 }

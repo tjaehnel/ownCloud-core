@@ -38,7 +38,10 @@
 			<div class="ldapWizardInfo invisible">&nbsp;</div>
 		</p>
 		<p class="ldap_count">
-			<span id="ldap_group_count">0 <?php p($l->t('groups found'));?></span>
+			<button class="ldapGetEntryCount ldapGetGroupCount" name="ldapGetEntryCount" type="button">
+				<?php p($l->t('Verify settings and count groups'));?>
+			</button>
+			<span id="ldap_group_count"></span>
 		</p>
 		<?php print_unescaped($_['wizardControls']); ?>
 	</div>
