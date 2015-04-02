@@ -24,6 +24,10 @@
 		<p>
 			<label><a id='toggleRawGroupFilter' class='ldapToggle'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
 		</p>
+		<p id="ldapReadOnlyGroupFilterContainer" class="hidden ldapReadOnlyFilterContainer">
+			<label><?php p($l->t('LDAP Filter:'));?></label>
+			<span class="ldapFilterReadOnlyElement ldapInputColElement"></span>
+		</p>
 		<p id="rawGroupFilterContainer" class="invisible">
 			<input type="text" id="ldap_group_filter" name="ldap_group_filter"
 			class="lwautosave"
