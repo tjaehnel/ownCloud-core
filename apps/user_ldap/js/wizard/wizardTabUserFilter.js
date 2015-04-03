@@ -14,12 +14,9 @@ OCA = OCA || {};
 	 */
 	var WizardTabUserFilter = OCA.LDAP.Wizard.WizardTabAbstractFilter.subClass({
 		/**
-		 * initializes the instance. Always call it after initialization.
-		 *
-		 * @param tabIndex
-		 * @param tabID
+		 * @inheritdoc
 		 */
-		init: function (tabIndex, tabID) {
+		init: function (fotf, tabIndex, tabID) {
 			var items = {
 				ldap_userfilter_objectclass: {
 					$element: $('#ldap_userfilter_objectclass'),
@@ -55,7 +52,7 @@ OCA = OCA || {};
 				}
 			};
 			this.setManagedItems(items);
-			this._super(tabIndex, tabID);
+			this._super(fotf, tabIndex, tabID);
 		},
 
 		/**

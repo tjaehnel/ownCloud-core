@@ -25,6 +25,10 @@
 	visibility: hidden;
 }
 
+.forceHidden {
+	display: none !important;
+}
+
 .ldapSettingsTabs {
 	float: right !important;
 }
@@ -105,6 +109,25 @@
 
 #ldap fieldset input[type=submit] {
 	width: auto;
+}
+
+.ldapManyGroupsSupport span {
+	display: inline-block;
+	vertical-align: top;
+	height: 150px;
+}
+
+.ldapManyGroupsSupport span button {
+	margin-top: 35px;
+}
+
+.ldapManyGroupsSearch {
+	width: 425px !important;
+}
+
+.ldapGroupList {
+	height: 150px;
+	width: 200px;
 }
 
 #ldap fieldset input, #ldap fieldset textarea {

@@ -14,17 +14,30 @@ OCA = OCA || {};
 	 */
 	var WizardTabAbstractFilter = OCA.LDAP.Wizard.WizardTabGeneric.subClass({
 		/**
+		 * @property {number} number that needs to exceeded to use complex group
+		 * selection element
+		 */
+		_groupElementSwitchThreshold: 40,
+
+		/**
+		 * tells whether multiselect or complex element is used for selecting
+		 * groups
+		 */
+		isComplexGroupChooser: false,
+
+		/**
 		 * initializes the instance. Always call it after initialization.
 		 * concrete view must set managed items first, and then call the parent
 		 * init.
 		 *
-		 * @param tabIndex
-		 * @param tabID
+		 * @param {OCA.LDAP.Wizard.FilterOnTypeFactory} fotf
+		 * @param {number} [tabIndex]
+		 * @param {string} [tabID]
 		 */
-		init: function (tabIndex, tabID) {
+		init: function (fotf, tabIndex, tabID) {
 			this._super(tabIndex, tabID);
 
-			//this.filterModeKey = this.getFilterModeKey();
+			this.foTFactory = fotf;
 			this._initMultiSelect(
 				this.getGroupsItem().$element,
 				t('user_ldap', 'Select groups')
@@ -44,8 +57,14 @@ OCA = OCA || {};
 					$element: this.getGroupsItem().$element
 				}
 			);
-			_.bindAll(this, 'onCountButtonClick');
+			_.bindAll(this, 'onCountButtonClick',  'onSelectGroup', 'onDeselectGroup');
 			this.getCountItem().$relatedElements.click(this.onCountButtonClick);
+			if(this.manyGroupsSupport) {
+				var $selectBtn = $(this.tabID).find('.ldapGroupListSelect');
+				$selectBtn.click(this.onSelectGroup);
+				var $deselectBtn = $(this.tabID).find('.ldapGroupListDeselect');
+				$deselectBtn.click(this.onDeselectGroup);
+			}
 		},
 
 		/**
@@ -104,6 +123,28 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * @inheritdoc
+		 */
+		_setFilterModeAssisted: function () {
+			this._super();
+			if(this.filterModeStateElement.status === 'enabled' && this.manyGroupsSupport) {
+				this.enableElement(this.getGroupsItem().$relatedElements);
+			}
+		},
+
+		/**
+		 * @inheritdoc
+		 */
+		_setFilterModeRaw: function () {
+			this._super();
+			console.log('020202');
+			if(this.manyGroupsSupport) {
+				console.log('dsfg');
+				this.disableElement(this.getGroupsItem().$relatedElements);
+			}
+		},
+
+		/**
 		 * sets the selected user object classes
 		 *
 		 * @param {Array} classes
@@ -119,8 +160,13 @@ OCA = OCA || {};
 		 * @param {Array} groups
 		 */
 		setGroups: function(groups) {
-			this.setElementValue(this.getGroupsItem().$element, groups);
-			this.getGroupsItem().$element.multiselect('refresh');
+			if(!this.isComplexGroupChooser) {
+				this.setElementValue(this.getGroupsItem().$element, groups);
+				this.getGroupsItem().$element.multiselect('refresh');
+			} else {
+				var $element = $(this.tabID).find('.ldapGroupListSelected');
+				this.equipMultiSelect($element, groups);
+			}
 		},
 
 		/**
@@ -160,6 +206,26 @@ OCA = OCA || {};
 		},
 
 		/**
+		 * updates (creates, if necessary) filterOnType instances
+		 */
+		updateFilterOnType: function() {
+			if(_.isUndefined(this.filterOnType)) {
+				this.filterOnType = [];
+
+				var $availableGroups = $(this.tabID).find('.ldapGroupListAvailable');
+				this.filterOnType.push(this.foTFactory.get(
+					$availableGroups, $(this.tabID).find('.ldapManyGroupsSearch')
+				));
+				var $selectedGroups  = $(this.tabID).find('.ldapGroupListSelected');
+				this.filterOnType.push(this.foTFactory.get(
+					$selectedGroups, $(this.tabID).find('.ldapManyGroupsSearch')
+				));
+			} else {
+				$(this.filterOnType).each(function() { this.updateOptions(); });
+			}
+		},
+
+		/**
 		 * @inheritdoc
 		 */
 		onActivate: function() {
@@ -169,13 +235,18 @@ OCA = OCA || {};
 		/**
 		 * resets the view when a configuration switch happened.
 		 *
-		 * @param {WizardTabUserFilter} view
+		 * @param {WizardTabAbstractFilter} view
 		 * @param {Object} configuration
 		 */
 		onConfigSwitch: function(view, configuration) {
 			view.getObjectClassItem().$element.find('option').remove();
 			view.getGroupsItem().$element.find('option').remove();
 			view.getCountItem().$element.text('');
+			$(view.tabID).find('.ldapGroupListAvailable').empty();
+			$(view.tabID).find('.ldapGroupListSelected').empty();
+			view.updateFilterOnType();
+			$(view.tabID).find('.ldapManyGroupsSearch').val('');
+
 
 			view.onConfigLoaded(view, configuration);
 		},
@@ -232,7 +303,24 @@ OCA = OCA || {};
 			if(payload.feature === view.getObjectClassItem().featureName) {
 				view.equipMultiSelect(view.getObjectClassItem().$element, payload.data);
 			} else if (payload.feature === view.getGroupsItem().featureName) {
-				view.equipMultiSelect(view.getGroupsItem().$element, payload.data);
+				if(view.manyGroupsSupport && payload.data.length > view._groupElementSwitchThreshold) {
+					// we need to fill the left list box, excluding the values
+					// that are already selected
+					var $element = $(view.tabID).find('.ldapGroupListAvailable');
+					var selected = view.configModel.configuration[view.getGroupsItem().keyName];
+					var available = $(payload.data).not(selected).get();
+					view.equipMultiSelect($element, available);
+					view.updateFilterOnType();
+					$(view.tabID).find(".ldapManyGroupsSupport").removeClass('hidden');
+					view.getGroupsItem().$element.multiselect({classes: 'forceHidden'});
+					view.isComplexGroupChooser = true;
+				} else {
+					view.isComplexGroupChooser = false;
+					view.equipMultiSelect(view.getGroupsItem().$element, payload.data);
+					view.getGroupsItem().$element.multiselect({classes: ''});
+					$(view.tabID).find(".ldapManyGroupsSupport").addClass('hidden');
+
+				}
 			}
 		},
 
@@ -246,6 +334,45 @@ OCA = OCA || {};
 			// let's clear the field
 			this.getCountItem().$element.text('');
 			this.configModel.requestWizard(this.getCountItem().keyName);
+		},
+
+		/**
+		 * saves groups when using the complex UI
+		 *
+		 * @param {Array} groups
+		 * @returns {boolean}
+		 * @private
+		 */
+		_saveGroups: function(groups) {
+			var toSave = '';
+			$(groups).each(function() { toSave = toSave + "\n" + this; } );
+			this.configModel.set(this.getGroupsItem().keyName, $.trim(toSave));
+		},
+
+		/**
+		 * acts on adding groups to the filter
+		 */
+		onSelectGroup: function() {
+			var $available = $(this.tabID).find('.ldapGroupListAvailable');
+			var $selected = $(this.tabID).find('.ldapGroupListSelected');
+			var selected = $.map($selected.find('option'), function(e) { return e.value; });
+
+			this._saveGroups(selected.concat($available.val()));
+			$available.find('option:selected').prependTo($selected);
+			this.updateFilterOnType();
+		},
+
+		/**
+		 * acts on removing groups to the filter
+		 */
+		onDeselectGroup: function() {
+			var $available = $(this.tabID).find('.ldapGroupListAvailable');
+			var $selected = $(this.tabID).find('.ldapGroupListSelected');
+			var selected = $.map($selected.find('option:not(:selected)'), function(e) { return e.value; });
+
+			this._saveGroups(selected);
+			$selected.find('option:selected').appendTo($available);
+			this.updateFilterOnType();
 		}
 
 	});

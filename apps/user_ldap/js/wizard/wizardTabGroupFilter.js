@@ -14,12 +14,9 @@ OCA = OCA || {};
 	 */
 	var WizardTabGroupFilter = OCA.LDAP.Wizard.WizardTabAbstractFilter.subClass({
 		/**
-		 * initializes the instance. Always call it after initialization.
-		 *
-		 * @param tabIndex
-		 * @param tabID
+		 * @inheritdoc
 		 */
-		init: function (tabIndex, tabID) {
+		init: function (fotf, tabIndex, tabID) {
 			var items = {
 				ldap_groupfilter_objectclass: {
 					$element: $('#ldap_groupfilter_objectclass'),
@@ -34,7 +31,12 @@ OCA = OCA || {};
 					$element: $('#ldap_groupfilter_groups'),
 					setMethod: 'setGroups',
 					keyName: 'ldap_groupfilter_groups',
-					featureName: 'GroupsForGroups'
+					featureName: 'GroupsForGroups',
+					$relatedElements: $(
+						this.tabID + '.ldapGroupListAvailable',
+						this.tabID + '.ldapGroupListSelected',
+						this.tabID + '.ldapManyGroupsSearch'
+					)
 				},
 				ldap_group_filter: {
 					$element: $('#ldap_group_filter'),
@@ -55,7 +57,9 @@ OCA = OCA || {};
 				}
 			};
 			this.setManagedItems(items);
-			this._super(tabIndex, tabID);
+			tabID = '#ldapWizard4';
+			this.manyGroupsSupport = true;
+			this._super(fotf, tabIndex, tabID);
 		},
 
 		/**

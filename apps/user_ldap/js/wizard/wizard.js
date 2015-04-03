@@ -37,10 +37,12 @@ $(document).ready(function() {
 		model.registerDetector(detectors[i]);
 	}
 
+	var filterOnTypeFactory = new OCA.LDAP.Wizard.FilterOnTypeFactory();
+
 	var tabs = [];
-	tabs.push(new OCA.LDAP.Wizard.WizardTabUserFilter());
+	tabs.push(new OCA.LDAP.Wizard.WizardTabUserFilter(filterOnTypeFactory));
 	tabs.push(new OCA.LDAP.Wizard.WizardTabLoginFilter());
-	tabs.push(new OCA.LDAP.Wizard.WizardTabGroupFilter());
+	tabs.push(new OCA.LDAP.Wizard.WizardTabGroupFilter(filterOnTypeFactory));
 
 	var view = new OCA.LDAP.Wizard.WizardView(model);
 	view.init();

@@ -150,13 +150,15 @@ OCA = OCA || {};
 		 * @param {Array} options
 		 */
 		equipMultiSelect: function($element, options) {
-			$element.find('option').remove();
+			$element.empty();
 			for (var i in options) {
 				var name = options[i];
-				var entry = "<option value='" + name + "'>" + name + "</option>";
-				$element.append(entry);
+				$element.append($('<option>').val(name).text(name).attr('title', name));
 			}
-			$element.multiselect('refresh');
+			if(!$element.hasClass('ldapGroupList')) {
+				$element.multiselect('refresh');
+				this.enableElement($element);
+			}
 		},
 
 		/**

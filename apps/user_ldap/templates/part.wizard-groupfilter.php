@@ -20,6 +20,16 @@
 			<select id="ldap_groupfilter_groups" multiple="multiple"
 			 name="ldap_groupfilter_groups">
 			</select>
+			<input type="text" class="ldapManyGroupsSupport ldapManyGroupsSearch hidden" placeholder="<?php p($l->t('Search groups'));?>" />
+		</p>
+		<p class="ldapManyGroupsSupport hidden">
+			<label></label>
+			<select class="ldapGroupList ldapGroupListAvailable" multiple="multiple"></select>
+			<span>
+				<button class="ldapGroupListSelect" type="button">&gt;</button><br/>
+				<button class="ldapGroupListDeselect" type="button">&lt;</button>
+			</span>
+			<select class="ldapGroupList ldapGroupListSelected" multiple="multiple"></select>
 		</p>
 		<p>
 			<label><a id='toggleRawGroupFilter' class='ldapToggle'>↓ <?php p($l->t('Edit LDAP Query'));?></a></label>
