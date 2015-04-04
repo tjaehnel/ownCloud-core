@@ -206,7 +206,7 @@ OCA = OCA || {};
 		/**
 		 * updates (creates, if necessary) filterOnType instances
 		 */
-		updateFilterOnType: function() {
+		updateFilterOnType: function(only) {
 			if(_.isUndefined(this.filterOnType)) {
 				this.filterOnType = [];
 
@@ -219,7 +219,12 @@ OCA = OCA || {};
 					$selectedGroups, $(this.tabID).find('.ldapManyGroupsSearch')
 				));
 			} else {
-				$(this.filterOnType).each(function() { this.updateOptions(); });
+				if(_.isUndefined || only.toLowerCase() === 'available')  {
+					this.filterOnType[0].updateOptions();
+				}
+				if(_.isUndefined || only.toLowerCase() === 'selected')  {
+					this.filterOnType[1].updateOptions();
+				}
 			}
 		},
 
@@ -270,6 +275,9 @@ OCA = OCA || {};
 					var methodName = view.managedItems[key].setMethod;
 					if(!_.isUndefined(view[methodName])) {
 						view[methodName](value);
+						if(methodName === 'setGroups') {
+							view.updateFilterOnType('selected');
+						}
 					}
 				}
 			}
@@ -313,7 +321,7 @@ OCA = OCA || {};
 					var selected = view.configModel.configuration[view.getGroupsItem().keyName];
 					var available = $(payload.data).not(selected).get();
 					view.equipMultiSelect($element, available);
-					view.updateFilterOnType();
+					view.updateFilterOnType('available');
 					$(view.tabID).find(".ldapManyGroupsSupport").removeClass('hidden');
 					view.getGroupsItem().$element.multiselect({classes: view.multiSelectPluginClass + ' forceHidden'});
 					view.isComplexGroupChooser = true;

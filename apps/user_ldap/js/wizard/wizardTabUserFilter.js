@@ -17,6 +17,7 @@ OCA = OCA || {};
 		 * @inheritdoc
 		 */
 		init: function (fotf, tabIndex, tabID) {
+			tabID = '#ldapWizard2';
 			var items = {
 				ldap_userfilter_objectclass: {
 					$element: $('#ldap_userfilter_objectclass'),
@@ -31,7 +32,12 @@ OCA = OCA || {};
 					$element: $('#ldap_userfilter_groups'),
 					setMethod: 'setGroups',
 					keyName: 'ldap_userfilter_groups',
-					featureName: 'GroupsForUsers'
+					featureName: 'GroupsForUsers',
+					$relatedElements: $(
+						tabID + ' .ldapGroupListAvailable,' +
+						tabID + ' .ldapGroupListSelected,' +
+						tabID + ' .ldapManyGroupsSearch'
+					)
 				},
 				ldap_userlist_filter: {
 					$element: $('#ldap_userlist_filter'),
@@ -52,6 +58,7 @@ OCA = OCA || {};
 				}
 			};
 			this.setManagedItems(items);
+			this.manyGroupsSupport = true;
 			this._super(fotf, tabIndex, tabID);
 		},
 
