@@ -220,7 +220,7 @@ OCA = OCA || {};
 				console.warn('Unreferenced activated tab ' + newTabID);
 			}
 			if(!_.isUndefined(this.tabs[oldTabID])) {
-				this.tabs[newTabID].isActive = false;
+				this.tabs[oldTabID].isActive = false;
 			} else {
 				console.warn('Unreferenced left tab ' + oldTabID);
 			}

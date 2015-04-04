@@ -14,12 +14,19 @@ OCA = OCA || {};
 	 * @abstract
 	 */
 	var WizardTabGeneric = OCA.LDAP.Wizard.WizardObject.subClass({
+		isActive: false,
+
+		/**
+		 * @property {string} - class that identifies a multiselect-plugin
+		 * control.
+		 */
+		multiSelectPluginClass: 'multiSelectPlugin',
+
 		/** @inheritdoc */
 		init: function(tabIndex, tabID) {
 			this.tabIndex = tabIndex;
 			this.tabID = tabID;
 			this.spinner = $('.ldapSpinner').first().clone().removeClass('hidden');
-			this.isActive = false;
 			_.bindAll(this, '_toggleRawFilterMode', '_toggleRawFilterModeConfirmation');
 		},
 
@@ -170,7 +177,7 @@ OCA = OCA || {};
 			var isMS = $element.is('select[multiple]');
 			var hasOptions = isMS ? ($element.find('option').length > 0) : false;
 
-			if($element.hasClass('.multiSelectPlugin') && hasOptions) {
+			if($element.hasClass(this.multiSelectPluginClass) && hasOptions) {
 				$element.multiselect("enable");
 			} else if(!isMS || (isMS && hasOptions)) {
 				$element.prop('disabled', false);
@@ -183,7 +190,7 @@ OCA = OCA || {};
 		 * @param {jQuery} $element
 		 */
 		disableElement: function($element) {
-			if($element.hasClass('.multiSelectPlugin')) {
+			if($element.hasClass(this.multiSelectPluginClass)) {
 				$element.multiselect("disable");
 			} else {
 				$element.prop('disabled', 'disabled');
@@ -262,6 +269,7 @@ OCA = OCA || {};
 				header: false,
 				selectedList: 9,
 				noneSelectedText: caption,
+				classes: this.multiSelectPluginClass,
 				close: function() {
 					view._requestSave($element);
 				}

@@ -127,7 +127,7 @@ OCA = OCA || {};
 		 */
 		_setFilterModeAssisted: function () {
 			this._super();
-			if(this.filterModeStateElement.status === 'enabled' && this.manyGroupsSupport) {
+			if(this.isComplexGroupChooser) {
 				this.enableElement(this.getGroupsItem().$relatedElements);
 			}
 		},
@@ -247,7 +247,7 @@ OCA = OCA || {};
 
 			if(view.isComplexGroupChooser) {
 				view.isComplexGroupChooser = false;
-				view.getGroupsItem().$element.multiselect({classes: ''});
+				view.getGroupsItem().$element.multiselect({classes: view.multiSelectPluginClass});
 				$(view.tabID).find(".ldapManyGroupsSupport").addClass('hidden');
 			}
 
@@ -315,12 +315,12 @@ OCA = OCA || {};
 					view.equipMultiSelect($element, available);
 					view.updateFilterOnType();
 					$(view.tabID).find(".ldapManyGroupsSupport").removeClass('hidden');
-					view.getGroupsItem().$element.multiselect({classes: 'forceHidden'});
+					view.getGroupsItem().$element.multiselect({classes: view.multiSelectPluginClass + ' forceHidden'});
 					view.isComplexGroupChooser = true;
 				} else {
 					view.isComplexGroupChooser = false;
 					view.equipMultiSelect(view.getGroupsItem().$element, payload.data);
-					view.getGroupsItem().$element.multiselect({classes: ''});
+					view.getGroupsItem().$element.multiselect({classes: view.multiSelectPluginClass});
 					$(view.tabID).find(".ldapManyGroupsSupport").addClass('hidden');
 
 				}

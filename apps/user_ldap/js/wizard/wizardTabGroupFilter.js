@@ -115,7 +115,7 @@ OCA = OCA || {};
 		 * @returns {string}
 		 */
 		getFilterModeKey: function () {
-			return 'ldap_user_filter_mode';
+			return 'ldap_group_filter_mode';
 		}
 
 	});
