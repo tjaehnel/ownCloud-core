@@ -137,7 +137,6 @@ OCA = OCA || {};
 		 */
 		_setFilterModeRaw: function () {
 			this._super();
-			console.log('020202');
 			if(this.manyGroupsSupport) {
 				this.disableElement(this.getGroupsItem().$relatedElements);
 			}
@@ -246,6 +245,11 @@ OCA = OCA || {};
 			view.updateFilterOnType();
 			$(view.tabID).find('.ldapManyGroupsSearch').val('');
 
+			if(view.isComplexGroupChooser) {
+				view.isComplexGroupChooser = false;
+				view.getGroupsItem().$element.multiselect({classes: ''});
+				$(view.tabID).find(".ldapManyGroupsSupport").addClass('hidden');
+			}
 
 			view.onConfigLoaded(view, configuration);
 		},
