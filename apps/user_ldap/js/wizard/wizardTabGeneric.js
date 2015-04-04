@@ -167,9 +167,12 @@ OCA = OCA || {};
 		 * @param {jQuery} $element
 		 */
 		enableElement: function($element) {
-			if($element.is('select[multiple]') && $element.find('option').length > 0) {
+			var isMS = $element.is('select[multiple]');
+			var hasOptions = isMS ? ($element.find('option').length > 0) : false;
+
+			if($element.hasClass('.multiSelectPlugin') && hasOptions) {
 				$element.multiselect("enable");
-			} else {
+			} else if(!isMS || (isMS && hasOptions)) {
 				$element.prop('disabled', false);
 			}
 		},
@@ -180,7 +183,7 @@ OCA = OCA || {};
 		 * @param {jQuery} $element
 		 */
 		disableElement: function($element) {
-			if($element.is('select[multiple]')) {
+			if($element.hasClass('.multiSelectPlugin')) {
 				$element.multiselect("disable");
 			} else {
 				$element.prop('disabled', 'disabled');

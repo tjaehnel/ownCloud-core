@@ -27,7 +27,7 @@
 			</label>
 
 			<select id="ldap_loginfilter_attributes" multiple="multiple"
-			 name="ldap_loginfilter_attributes">
+			 name="ldap_loginfilter_attributes" class="multiSelectPlugin">
 			</select>
 		</p>
 		<p>

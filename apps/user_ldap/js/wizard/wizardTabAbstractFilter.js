@@ -139,7 +139,6 @@ OCA = OCA || {};
 			this._super();
 			console.log('020202');
 			if(this.manyGroupsSupport) {
-				console.log('dsfg');
 				this.disableElement(this.getGroupsItem().$relatedElements);
 			}
 		},

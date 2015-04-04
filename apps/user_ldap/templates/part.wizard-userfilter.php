@@ -9,7 +9,7 @@
 			</label>
 
 			<select id="ldap_userfilter_objectclass" multiple="multiple"
-			 name="ldap_userfilter_objectclass">
+			 name="ldap_userfilter_objectclass" class="multiSelectPlugin">
 			</select>
 		</p>
 		<p>
@@ -22,7 +22,7 @@
 			</label>
 
 			<select id="ldap_userfilter_groups" multiple="multiple"
-			 name="ldap_userfilter_groups">
+			 name="ldap_userfilter_groups" class="multiSelectPlugin">
 			</select>
 		</p>
 		<p>
